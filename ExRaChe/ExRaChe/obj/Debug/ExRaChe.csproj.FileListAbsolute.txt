@@ -1,8 +1,9 @@
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\bin\Debug\ExRaChe.exe.config
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\bin\Debug\ExRaChe.exe
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\bin\Debug\ExRaChe.pdb
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\obj\Debug\ExRaChe.Properties.Resources.resources
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\obj\Debug\ExRaChe.csproj.GenerateResource.Cache
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\obj\Debug\ExRaChe.csproj.CoreCompileInputs.cache
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\obj\Debug\ExRaChe.exe
-E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\ExRaChe\ExRaChe\obj\Debug\ExRaChe.pdb
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\obj\Debug\ExRaChe.Properties.Resources.resources
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\obj\Debug\ExRaChe.csproj.GenerateResource.Cache
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\obj\Debug\ExRaChe.csproj.CoreCompileInputs.cache
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\bin\Debug\ExRaChe.exe.config
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\bin\Debug\ExRaChe.exe
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\bin\Debug\ExRaChe.pdb
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\obj\Debug\ExRaChe.exe
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\obj\Debug\ExRaChe.pdb
+E:\Usb data - prenosna\Programovani\C sharp\Konicek Test\Exchange Rate Checker\Wrc\ExRaChe\ExRaChe\obj\Debug\ExRaChe.csprojResolveAssemblyReference.cache
