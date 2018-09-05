@@ -12,6 +12,7 @@ using System.Drawing.Drawing2D;
 using System.Xml;
 using System.Xml.Linq;
 using System.ServiceModel.Syndication;
+using System.Net;
 
 namespace ExRaChe
 {
@@ -85,9 +86,18 @@ namespace ExRaChe
                 ContentFont = new Font(ContentFont.FontFamily, input, ContentFont.Style);
                 //ContentLabel.Font = ContentFont;
             }
-        }
-        //NEW -Hrzntl object declaration
+        }//NEW -Hrzntl object declaration
 
+
+        //NEW -SniffIt() object declaration
+        private List<string> PgsHtml = new List<string>();//
+        private XmlReader pksRdr;//
+        private string HtmlCode = "";//
+        private XmlDocument doccxml = new XmlDocument();//
+        private HtmlDocument Dcmnt;//
+        private List<XmlNode> NodesAll = new List<XmlNode>();//
+        private Dictionary<string, decimal> CrrncsRates = new Dictionary<string, decimal>(); 
+        //NEW -SniffIt() object declaration
         //TlStrip
         private ToolStrip menuStrip;
         private StatusStrip statusStrip;
@@ -580,108 +590,271 @@ namespace ExRaChe
         }//Startup seting for window
         public void SniffIt()
         {
-            {//FakeNews
-                Fake = true;
-                string ttlText = "Attempt for internet conection failed.", smmryText = "Nothing to display", dcmntTex = "Nothing to display", lnks = "Url:https://www.aktualne.cz/rss/ can not be loaded", pblshDate = DateTime.Now.ToString(), id = "0";
-                List<string> imgSrcFrmFile = (Application.StartupPath + "/Intro Screen.jpg").Split(' ').ToList();
-                news.Add(new RssNews(ttlText, smmryText, dcmntTex, lnks, pblshDate, id, imgSrcFrmFile));
-                id = "1";
-                news.Add(new RssNews(ttlText, smmryText, dcmntTex, lnks, pblshDate, id, imgSrcFrmFile));
-                id = "2";
-                news.Add(new RssNews(ttlText, smmryText, dcmntTex, lnks, pblshDate, id, imgSrcFrmFile));
-                List<RssNews> RssList = news.Where(rss => rss.Id == Sttus.POSITION.StrValue).ToList();
-                if (Sttus.POSITION.StrValue != "" && Sttus.POSITION.BoolValue && RssList.Count > 0)
-                {   //check empty id on start      //locked on id               //id found
-                    ShowOneRSS(RssList.First());
-                }
-                else
-                {
-                    Sttus.POSITION.StrValue = news[0].Id;//first item
-                    ShowOneRSS(news[0]);
-                }
-                NwsCount = news.Count;
-            }//FakeNews
-            try
             {
-
-                //http://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.jsp
-                //https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
-                //http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml
-
-                XmlReader rdr = XmlReader.Create("https://www.aktualne.cz/rss/");
-                SyndicationFeed snFeed = SyndicationFeed.Load(rdr);
-                rdr.Close();
-                int snFeedCount = 0;
-                foreach (SyndicationItem item in snFeed.Items)
-                { snFeedCount++; }
-                if (snFeedCount > 0)
                 {
-                    Fake = false;
-                    news.Clear();
-                    foreach (SyndicationItem item in snFeed.Items)
+                    string url = "http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml";
+                    XDocument doc = XDocument.Load(url);
+
+                    XNamespace gesmes = "http://www.gesmes.org/xml/2002-08-01";
+                    XNamespace ns = "http://www.ecb.int/vocabulary/2002-08-01/eurofxref";
+
+                    var cubes = doc.Descendants(ns + "Cube")
+                                   .Where(x => x.Attribute("currency") != null)
+                                   .Select(x => new {
+                                       Currency = (string)x.Attribute("currency"),
+                                       Rate = (decimal)x.Attribute("rate")
+                                   });
+                    string otpt = "";
+                    foreach (var result in cubes)
                     {
-                        WebBrowser browser = new WebBrowser();
-                        List<string> imgSrc = new List<string>();
-                        foreach (SyndicationElementExtension extension in item.ElementExtensions)
-                        {
-                            XElement ele = extension.GetObject<XElement>();
-                            if (ele.Name.LocalName == "encoded" && ele.Name.Namespace.ToString().Contains("content"))
-                            {
-                                browser.ScriptErrorsSuppressed = true;
-                                browser.DocumentText = ele.Value;
-                                browser.Document.OpenNew(true);
-                                browser.Document.Write(ele.Value);
-                                browser.Refresh();
-                                foreach (HtmlElement image in browser.Document.Images) imgSrc.Add(image.GetAttribute("src"));
-                            }
-                        }
-                        news.Add(new RssNews(item.Title.Text, item.Summary.Text, browser.DocumentText, item.Links.FirstOrDefault().Uri.ToString(), item.PublishDate.ToString(), item.Id, imgSrc));
+                        CrrncsRates.Add(result.Currency, result.Rate);
+                        otpt += result.Currency + ": " + result.Rate.ToString() + Environment.NewLine;
+                        //Console.WriteLine("{0}: {1}", result.Currency, result.Rate);
                     }
-
-                    if (news.Count > 0)
-                    {
-                        NwsAllRss = news;
-                        List<RssNews> RssList = news.Where(rss => rss.Id == Sttus.POSITION.StrValue).ToList();
-                        if (Sttus.POSITION.StrValue != "" && Sttus.POSITION.BoolValue && RssList.Count > 0)
-                        {   //check empty id on start      //locked on id               //id found
-                            NwsActualRssShw = RssList.First();
-                            Pstn = NwsActualRssShw.Id;
-                            ShowOneRSS(RssList.First());
-                        }
-                        else
-                        {
-                            Sttus.POSITION.StrValue = news[0].Id;//first item
-                            ShowOneRSS(news[0]);
-                            NwsActualRssShw = news[0];
-                            Pstn = news[0].Id;
-                        }
-                        NwsCount = news.Count;
-                        for (int i = 0; i < news.Count; i++)
-                        {
-                            string rssOneByOne = news[i].ToString();
-                            NwsAll.Add(rssOneByOne);
-                        }
-
-
-                    }
+                    MessageBox.Show(otpt);
+                    MessageBox.Show(CrrncsRates.Count.ToString());
                 }
+            }
+            {
+                //try
+                //{
+
+                //    //http://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.jsp
+                //    //-- https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
+                //    //http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml
+                //    using (WebClient clnt = new WebClient())
+                //    {
+                //        {//Xml save & create
+                //            {//Save
+                //                {//Save
+                //                    string autoPath = Application.StartupPath;
+
+                //                    autoPath += "\\User save";
+                //                    autoPath += "\\ecb.xml";
+
+                //                    XmlReader rdr = XmlReader.Create("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?bd0185b475a4fc0ddae0086a99c77f78");
+                //                    string sv = (clnt.DownloadString("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?bd0185b475a4fc0ddae0086a99c77f78"));
+                //                    File.WriteAllText(autoPath, sv);
+                //                }//Save
+                //            }//Save
+                //            {//Create
+                //                {
+                //                    string autoPath = Application.StartupPath;
+
+                //                    autoPath += "\\User save";
+                //                    //autoPath += "\\ecb.xml";
+                //                    autoPath += "\\ecbPks.xml";
+                //                    doccxml.Load(autoPath);
+                //                    if (doccxml.InnerText != "")
+                //                    {
+                //                        ShowOneCrrncy(doccxml);
+                //                    }
+                //                    ShowOneCrrncy(doccxml);
+
+
+                //                    //MessageBox.Show("XmlReader rdr: " + rdr.ToString());
+
+                //                }
+                //            }//create
+
+                //        }//Xml save &create
+
+
+                //    }//Xml save &create
+                //    {
+                //        //string autoPath = Application.StartupPath;
+
+                //        //autoPath += "\\User save";
+                //        //autoPath += "\\ecbPks.xml";
+                //        //XmlReader rdr = XmlReader.Create(autoPath);
+                //        //MessageBox.Show("XmlReader rdr: " + rdr.ToString());
+                //        //SyndicationFeed snFeed = SyndicationFeed.Load(rdr);
+                //        //rdr.Close();
+                //        //int snFeedCount = 0;
+                //        //foreach (SyndicationItem item in snFeed.Items)
+                //        //{ snFeedCount++; }
+
+                //    }
+
+                //    {//Original Rss
+                //     //{
+                //     //    XmlReader rdr = XmlReader.Create("https://www.aktualne.cz/rss/");
+                //     //    SyndicationFeed snFeed = SyndicationFeed.Load(pksRdr);
+                //     //    rdr.Close();
+                //     //    pksRdr.Close();
+                //     //    int snFeedCount = 0;
+                //     //    foreach (SyndicationItem item in snFeed.Items)
+                //     //    { snFeedCount++; }
+                //     //    if (snFeedCount > 0)
+                //     //    {
+                //     //        Fake = false;
+                //     //        news.Clear();
+                //     //        foreach (SyndicationItem item in snFeed.Items)
+                //     //        {
+                //     //            WebBrowser browser = new WebBrowser();
+                //     //            List<string> imgSrc = new List<string>();
+                //     //            foreach (SyndicationElementExtension extension in item.ElementExtensions)
+                //     //            {
+                //     //                XElement ele = extension.GetObject<XElement>();
+                //     //                if (ele.Name.LocalName == "encoded" && ele.Name.Namespace.ToString().Contains("content"))
+                //     //                {
+                //     //                    browser.ScriptErrorsSuppressed = true;
+                //     //                    browser.DocumentText = ele.Value;
+                //     //                    browser.Document.OpenNew(true);
+                //     //                    browser.Document.Write(ele.Value);
+                //     //                    browser.Refresh();
+                //     //                    foreach (HtmlElement image in browser.Document.Images) imgSrc.Add(image.GetAttribute("src"));
+                //     //                }
+                //     //            }
+                //     //            news.Add(new RssNews(item.Title.Text, item.Summary.Text, browser.DocumentText, item.Links.FirstOrDefault().Uri.ToString(), item.PublishDate.ToString(), item.Id, imgSrc));
+                //     //        }
+
+                //        //        if (news.Count > 0)
+                //        //        {
+                //        //            NwsAllRss = news;
+                //        //            List<RssNews> RssList = news.Where(rss => rss.Id == Sttus.POSITION.StrValue).ToList();
+                //        //            if (Sttus.POSITION.StrValue != "" && Sttus.POSITION.BoolValue && RssList.Count > 0)
+                //        //            {   //check empty id on start      //locked on id               //id found
+                //        //                NwsActualRssShw = RssList.First();
+                //        //                Pstn = NwsActualRssShw.Id;
+                //        //                ShowOneRSS(RssList.First());
+                //        //            }
+                //        //            else
+                //        //            {
+                //        //                Sttus.POSITION.StrValue = news[0].Id;//first item
+                //        //                ShowOneRSS(news[0]);
+                //        //                NwsActualRssShw = news[0];
+                //        //                Pstn = news[0].Id;
+                //        //            }
+                //        //            NwsCount = news.Count;
+                //        //            for (int i = 0; i < news.Count; i++)
+                //        //            {
+                //        //                string rssOneByOne = news[i].ToString();
+                //        //                NwsAll.Add(rssOneByOne);
+                //        //            }
+
+
+                //        //        }
+                //        //    }
+                //        //    if (snFeedCount < 1)
+                //        //    {
+                //        //        {//FakeNews
+                //        //            Fake = true;
+                //        //            string ttlText = "Attempt for internet conection failed.", smmryText = "Nothing to display", dcmntTex = "Nothing to display", lnks = "Url:https://www.aktualne.cz/rss/ can not be loaded", pblshDate = DateTime.Now.ToString(), id = "0";
+                //        //            List<string> imgSrcFrmFile = (Application.StartupPath + "/Intro Screen.jpg").Split(' ').ToList();
+                //        //            news.Add(new RssNews(ttlText, smmryText, dcmntTex, lnks, pblshDate, id, imgSrcFrmFile));
+                //        //            id = "1";
+                //        //            news.Add(new RssNews(ttlText, smmryText, dcmntTex, lnks, pblshDate, id, imgSrcFrmFile));
+                //        //            id = "2";
+                //        //            news.Add(new RssNews(ttlText, smmryText, dcmntTex, lnks, pblshDate, id, imgSrcFrmFile));
+                //        //            List<RssNews> RssList = news.Where(rss => rss.Id == Sttus.POSITION.StrValue).ToList();
+                //        //            if (Sttus.POSITION.StrValue != "" && Sttus.POSITION.BoolValue && RssList.Count > 0)
+                //        //            {   //check empty id on start      //locked on id               //id found
+                //        //                ShowOneRSS(RssList.First());
+                //        //            }
+                //        //            else
+                //        //            {
+                //        //                Sttus.POSITION.StrValue = news[0].Id;//first item
+                //        //                ShowOneRSS(news[0]);
+                //        //            }
+                //        //            NwsCount = news.Count;
+                //        //        }//FakeNews
+                //        //    }
+                //        //}
+                //    }//Original Rss
+                //}
+                //catch (Exception)
+                //{
+
+                //    //throw;
+                //}
+            }
+            //MessageBox.Show(doccxml.OuterXml);
+        }
+        private void ShowOneCrrncy(XmlDocument docXml)
+        {
+            doccxml = docXml;
+            //here goes the code that shows the stuff from one "Cube"
+            XmlNode nodeCube = doccxml.SelectSingleNode("Cube");
+            //XmlNode sbNodeCrrncy = nodeCube.SelectSingleNode("currency");
+            XmlNodeList prep = nodeCube.SelectNodes("Cube");
+
+
+            MessageBox.Show(prep.Count.ToString());
+            //nodeCube.Attributes();
+            {//XmlDocument load
+                //XmlDocument dcLoad = new XmlDocument();
+                //dcLoad.Load("IndexOfWords.xml");
+
+                //XmlNode node = dcLoad.SelectSingleNode("ABlock");
+
+                ////XmlNodeList prop = node.SelectNodes("CBlock");
+
+                ////foreach (XmlNode item in prop)
+                //{
+                //    //items Temp = new items();
+                //    //Temp.AssignInfo(item);
+                //    //lstitems.Add(Temp);
+                //}
+                ////MessageBox.Show(dcLoad.OuterXml);
+            }//XmlDocument load
+
+
+            //XmlDocument xmlDcmnt = new XmlDocument();
+
+            //foreach (XmlNode xlm in doccxml)
+            {
+                //NodesAll.Add(xlm);
+                //xmlDcmnt.Load(xlm);
+            }
+            Ttle.Text = nodeCube.Name;
+
+            NNw.Text = nodeCube.OuterXml;
+            UrlImg.Text = "";
+            //foreach (string pctText in rss.ImageSource)
+            //{
+            //    UrlImg.Text += pctText + Environment.NewLine;
+            //}
+            if (Fake == false)
+            {
+                //shwPicture.Load(UrlImg.Text);
 
             }
-            catch (Exception)
+            else
             {
-
-                //throw;
-            }
+                //UrlImg.Text = "";
+            }//here goes the code that shows the stuff from one rss
 
         }
-
         private void ShowOneRSS(RssNews rss)
         {
+            ////here goes the code that shows the stuff from one rss
+            //Ttle.Text = rss.Title;
+            //NNw.Text = rss.Summary;
+            //UrlImg.Text = "";
+            //foreach (string pctText in rss.ImageSource)
+            //{
+            //    UrlImg.Text += pctText + Environment.NewLine;
+            //}
+            //if (Fake == false)
+            //{
+            //    shwPicture.Load(UrlImg.Text);
+
+            //}
+            //else
+            //{
+            //    UrlImg.Text = "";
+            //}//here goes the code that shows the stuff from one rss
+
+
+        }
+        private void ShowOnepage()
+        {
             //here goes the code that shows the stuff from one rss
-            Ttle.Text = rss.Title;
-            NNw.Text = rss.Summary;
+            Ttle.Text = Dcmnt.Title;
+            NNw.Text = Dcmnt.Body.ToString();
             UrlImg.Text = "";
-            foreach (string pctText in rss.ImageSource)
+            foreach (string pctText in Dcmnt.All)
             {
                 UrlImg.Text += pctText + Environment.NewLine;
             }
@@ -700,7 +873,7 @@ namespace ExRaChe
             // S.F.PANEL is used to acces this panel
         }
 
-        
+
 
 
 
