@@ -2,7 +2,7 @@
 
 namespace ExRaChe
 {
-    public class MainStatus : StatusStrip
+    public class MnStatus : StatusStrip
     {
         public MultiButton FFWD = new MultiButton("|<<");
         public MultiButton FWD = new MultiButton("|<");
@@ -10,7 +10,7 @@ namespace ExRaChe
         public MultiButton BCK = new MultiButton(">|");
         public MultiButton REW = new MultiButton(">>|");
 
-        public MainStatus()
+        public MnStatus()
         {
             Dock = DockStyle.Bottom;
 
@@ -22,7 +22,6 @@ namespace ExRaChe
             POSITION.BoolChange += (sender, e) => { }; // ID LOCK CHANGE
             POSITION.IntChange += (sender, e) => { }; // Actual position CHANGE
             POSITION.StrChange += (sender, e) => { }; //focused ID CHANGE
-
             Items.Add(BCK.TsItem);
             BCK.ClickOnly += (sender, e) => { }; // back click
             Items.Add(REW.TsItem);
