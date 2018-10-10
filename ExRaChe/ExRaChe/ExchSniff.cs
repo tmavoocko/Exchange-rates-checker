@@ -21,60 +21,7 @@ namespace ExRaChe
 {
     public partial class ExchSniff : Form
     {
-        //IntroScr
-        public int TmrCnvertToInt = 0;
-        public int TmrCnvertToIntEnd = 0;
-        public int ClctIntrval = 0;
-        public DateTime TmerStart = new DateTime();
-        public DateTime TmerEnd = new DateTime();
-        public DateTime TmOfClick = new DateTime();
-        List<string> IntroStrngs = new List<string>();
-        private Point mouseDownLoc;
-        public Panel DrwCore = new Panel();//IntroScr
-        //Hrzntl object declaration
-        public Point SpwLc = new Point();
-        public Timer Tckr1 = new Timer();
-        public Font MFnt = new Font("Litograph", 15, FontStyle.Bold);
-        public Font mFntCh = new Font("Litograph", 10, FontStyle.Regular);
-        public Rectangle DsgRct = new Rectangle();
-        //public DsgInsHrz Hrzntl = new DsgInsHrz();
-        public Panel VrtLft, HrzLftTop, HrzLftDwn, VrtRght, HrzRghtTop, HrzRghtDwn;
-        public Panel Hrzntl = new Panel();
-        public Panel Prgrm = new Panel();
-        public Color ClrBasePenelHolder = Color.FromArgb(255, Color.WhiteSmoke);
-
-        public Color ClrdBck = Color.FromArgb(132, 45, 37);
-        public Color ClrdFrnt = Color.FromArgb(232, 145, 137);
-
-        public Color ClrInver;
-        public Control LstCntrl = new Control();
-        private int DsgnModifierWdth = 2;
-        public int SiModifier = 1;
-
-        //Hrzntl object declaration -new
-        private List<string> NwsAll = new List<string>();//
-        private List<RssNews> NwsAllRss = new List<RssNews>();//
-        private RssNews NwsActualRssShw;
-        private string Pstn = "";
-        public MainStatus Sttus = new MainStatus();
-        private int NwsCount = 0;
-        private List<RssNews> news = new List<RssNews>();//
-        private Label Ttle = new Label();
-        private Label ttle;
-        private Label NNw = new Label();
-        private Label UrlImg = new Label();
-        private PictureBox shwPicture = new PictureBox() { Dock = DockStyle.Top, MinimumSize = new Size(100, 100), SizeMode = PictureBoxSizeMode.StretchImage, Visible = true };
-        private Label shwSummary;
-        private Panel allwaysShown = new Panel();
-        private Panel btnHldr = new Panel();
-        private PictureBox icn = new PictureBox();
-        private Label Icn = new Label();
-        private Label pstdTime = new Label();
-        private bool Fake = false;
-        private Size MSzz = new Size();
-        public Chrt ChartOfMine;
-        //public List<string> NwsAll = new List<string>();
-        public Panel smtimsShown = new Panel();
+        //Manager
         public bool ShwNws = false;
         private static Font TitleFont = new Font("Litograph", 10, FontStyle.Bold);
         private static Font ContentFont = new Font("Litograph", 10, FontStyle.Regular);
@@ -95,306 +42,393 @@ namespace ExRaChe
                 //ContentLabel.Font = ContentFont;
             }
         }
-        private int ShwOneCrrncsPosition = 0;//NEW -Hrzntl object declaration
+        private int ShwOneCrrncsPosition = 0;
+        public Color ClrdBck = Color.FromArgb(132, 45, 37);
+        public Color ClrdFrnt = Color.FromArgb(232, 145, 137);
+
+        public Color ClrInver;
+        public Control LstCntrl = new Control();
+        private int DsgnModifierWdth = 2;
+        public int SiModifier = 1;//Manager
+
+        //IntroScr
+        public int TmrCnvertToInt = 0;
+        public int TmrCnvertToIntEnd = 0;
+        public int ClctIntrval = 0;
+        public DateTime TmerStart = new DateTime();
+        public DateTime TmerEnd = new DateTime();
+        public DateTime TmOfClick = new DateTime();
+        List<string> IntroStrngs = new List<string>();
+        private Point mouseDownLoc;
+        public Panel DrwCore = new Panel();//IntroScr
+
+        //Hrzntl Base DSGN object declaration
+        public Point SpwLc = new Point();
+        public Timer Tckr1 = new Timer();
+        public Font MFnt = new Font("Litograph", 15, FontStyle.Bold);
+        public Font mFntCh = new Font("Litograph", 10, FontStyle.Regular);
+        public Rectangle DsgRct = new Rectangle();
+        public Panel VrtLft, HrzLftTop, HrzLftDwn, VrtRght, HrzRghtTop, HrzRghtDwn;
+        public Panel Hrzntl = new Panel();
+        public Panel Prgrm = new Panel();
+        public Color ClrBasePenelHolder = Color.FromArgb(255, Color.WhiteSmoke);//Hrzntl Base DSGN object declaration
+
+        //Hrzntl everithing else -object declaration -new
+        private List<string> NwsAll = new List<string>();//
+        private List<RssNews> NwsAllRss = new List<RssNews>();//
+        public MainStatus Sttus = new MainStatus();
+        private List<RssNews> news = new List<RssNews>();//
+        private Label Ttle = new Label();
+        private Label ttle;
+        private Label NCrr = new Label();
+        private Label UrlImg = new Label();
+        private GrphPanel shwGraph;
+        private PictureBox shwPicture = new PictureBox() { Dock = DockStyle.Fill, MinimumSize = new Size(30, 16), SizeMode = PictureBoxSizeMode.StretchImage, Visible = true };
+        private Label shwSummary;
+        private Label LblSrSDate;
+        private Label LblSrEDate;
+        private Panel allwaysShown = new Panel();
+        private Panel btnHldr = new Panel();
+        private PictureBox icn = new PictureBox();
+        private Label Icn = new Label();
+        private Label pstdTime = new Label();
+        private bool Fake = false;
+        private Size MSzz = new Size();
+        public Panel smtimsShown = new Panel();//Hrzntl everithing else
+
         //Graph object declaration
+        private bool tst = true;
         private List<PriceData> PriceList = new List<PriceData>();// Store the data.
+        private List<PriceData> nvrtd = new List<PriceData>();
+        private List<PriceData> prcDateTemporary = new List<PriceData>();
         private Matrix WtoDMatrix, DtoWMatrix;// The coordinate mappings.
-        //private PictureBox picGraph = new PictureBox() { Location=new Point(0,0),Size=new Size(200,150),Dock=DockStyle.Fill};
+        private Label txtStartDate = new Label() { TextAlign = ContentAlignment.MiddleLeft, Font = ContentFont, ForeColor = Color.Black, BackColor = Color.Yellow, Dock = DockStyle.Left };
+        private Label txtEndDate = new Label() { TextAlign = ContentAlignment.MiddleRight, Font = ContentFont, ForeColor = Color.Black, BackColor = Color.Yellow, Dock = DockStyle.Right };
         private ToolTip tipData = new ToolTip();//Graph object declaration
 
-        //NEW -SniffIt() object declaration
+        //User DateTime
+        private DateTime SrEnd_date;
+        private DateTime SrStart_date;//User DateTime
+
+        //SniffIt() object declaration
         private List<string> PgsHtml = new List<string>();//
         private XmlReader pksRdr;//
         private string HtmlCode = "";//
         private XmlDocument doccxml = new XmlDocument();//
-        private HtmlDocument Dcmnt;//
-        private List<XmlNode> NodesAll = new List<XmlNode>();//
+        private HtmlDocument Dcmnt;//        
         private Dictionary<string, decimal> CrrncsRates = new Dictionary<string, decimal>();
         private Dictionary<DateTime, decimal> CrrncyHstry = new Dictionary<DateTime, decimal>();//NEW -SniffIt() object declaration
+        private List<XmlNode> NodesAll = new List<XmlNode>();//SniffIt() object declaration
+
         
-        //Graph object decl.
-        private Label txtStartDate = new Label(){ForeColor=Color.Black,BackColor=Color.Yellow,Dock = DockStyle.Left};
-        private Label txtEndDate = new Label() { ForeColor = Color.Black, BackColor =Color.Yellow,Dock = DockStyle.Right };
-        
-        //TlStrip
-        private ToolStrip menuStrip;
-        private StatusStrip statusStrip;
-        private ContextMenuStrip fileMenuStrip;
-        private ContextMenuStrip optionsMenuStrip;
-        private bool inProgres = false;
-        private static Timer ticker = new Timer();
-        ToolStripProgressBar progress;
-        ToolStripLabel label;
-        //TlStrip
 
         private Timer tcker = new Timer() { Interval = 100 };
         private int tickCounter = 0;
         private bool updateWatcher = false;
         public ExchSniff()
         {
-            SniffIt();
-            tcker.Tick += (sender, e) =>
-            {
-                DateTime now = DateTime.Now;
-                Text = now.ToLongTimeString();
 
-                if (!updateWatcher)
+            {//Manager stuff
                 {
-                    updateWatcher = true;
-                    if (tickCounter == 200)
+                    //System.Threading.Thread.CurrentThread.CurrentCulture =System.Globalization.CultureInfo.GetCultureInfo("cz");
+                    //System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("fa");
+                    //System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
+
+                    //System.Threading.Thread.CurrentThread.CurrentUICulture =System.Globalization.CultureInfo.GetCultureInfo("cz");
+
+
+
+
+
+                    //FormBorderStyle = FormBorderStyle.None;
+                    //WindowState = FormWindowState.Maximized;
+                    DoubleBuffered = true;
+                    //AutoScroll = true;           
+                    //InitializeComponent();
+                    //Text = "TxtSpltr";
+                    Text = "Exchange rate checker - D.Konicek - zadani pate";
+                    MouseDown += (sender, e) =>
                     {
-                        tickCounter = 0;
-                        SniffIt();
-                    }
-                    else tickCounter++;
-                    updateWatcher = false;
-                }
-            };
-            tcker.Start();
+                        mouseDownLoc = e.Location;
 
-
-
-
-            //FormBorderStyle = FormBorderStyle.None;
-            //WindowState = FormWindowState.Maximized;
-            DoubleBuffered = true;
-            //AutoScroll = true;           
-            //InitializeComponent();
-            //Text = "TxtSpltr";
-            Text = "Exchange rate checker - D.Konicek - zadani pate";
-            MouseDown += (sender, e) =>
-            {
-                mouseDownLoc = e.Location;
-
-            };
-
-            MouseUp += (sender, e) =>
-            {
-
-            };
-            MouseWheel += (sender, e) =>
-            {
-                //int oldZoom = 100;
-                //int newZoom = e.Delta * SystemInformation.MouseWheelScrollLines / 30 + ZoomPerc;
-                //ZoomPerc += e.Delta * SystemInformation.MouseWheelScrollLines / 120;
-                //if (newZoom < minZoom) newZoom = minZoom;
-                //if (newZoom > maxZoom) newZoom = maxZoom;
-                //foreach (Control p in Controls)
-                //{
-                //    p.Location = new Point(p.Location.X * newZoom / oldZoom, p.Location.Y * newZoom / oldZoom);
-                //    p.Size = new Size(p.Size.Width * newZoom / oldZoom, p.Size.Height * newZoom / oldZoom);
-                //    //MessageBox.Show(p.Location.ToString() +Environment.NewLine + p.Size.ToString());
-                //}
-            };
-            MouseHover += (sender, e) =>
-            {
-                ToolTip hint = new ToolTip();
-                hint.SetToolTip(this, Text);
-                foreach (Control c in Controls)
-                {
-                    c.MouseHover += (senderf, f) =>
-                    {
-                        ToolTip hint2 = new ToolTip();
-                        hint2.SetToolTip(c, c.ToString());
                     };
-                    if (c.Controls.Count > 0)
-                    {
-                        foreach (Control Cc in Controls)
-                        {
 
-                            Cc.MouseHover += (senderf, f) =>
+                    MouseUp += (sender, e) =>
+                    {
+
+                    };
+                    MouseWheel += (sender, e) =>
+                    {
+                        //int oldZoom = 100;
+                        //int newZoom = e.Delta * SystemInformation.MouseWheelScrollLines / 30 + ZoomPerc;
+                        //ZoomPerc += e.Delta * SystemInformation.MouseWheelScrollLines / 120;
+                        //if (newZoom < minZoom) newZoom = minZoom;
+                        //if (newZoom > maxZoom) newZoom = maxZoom;
+                        //foreach (Control p in Controls)
+                        //{
+                        //    p.Location = new Point(p.Location.X * newZoom / oldZoom, p.Location.Y * newZoom / oldZoom);
+                        //    p.Size = new Size(p.Size.Width * newZoom / oldZoom, p.Size.Height * newZoom / oldZoom);
+                        //    //MessageBox.Show(p.Location.ToString() +Environment.NewLine + p.Size.ToString());
+                        //}
+                    };
+                    MouseHover += (sender, e) =>
+                    {
+                        ToolTip hint = new ToolTip();
+                        hint.SetToolTip(this, Text);
+                        foreach (Control c in Controls)
+                        {
+                            c.MouseHover += (senderf, f) =>
                             {
                                 ToolTip hint2 = new ToolTip();
-                                hint2.SetToolTip(Cc, Cc.ToString());
+                                hint2.SetToolTip(c, c.ToString());
                             };
-                            if (Cc.Controls.Count > 0)
+                            if (c.Controls.Count > 0)
                             {
-                                foreach (Control Ccc in Controls)
+                                foreach (Control Cc in Controls)
                                 {
-                                    Ccc.MouseHover += (senderf, f) =>
+
+                                    Cc.MouseHover += (senderf, f) =>
                                     {
                                         ToolTip hint2 = new ToolTip();
-                                        hint2.SetToolTip(Ccc, Ccc.ToString());
+                                        hint2.SetToolTip(Cc, Cc.ToString());
                                     };
+                                    if (Cc.Controls.Count > 0)
+                                    {
+                                        foreach (Control Ccc in Controls)
+                                        {
+                                            Ccc.MouseHover += (senderf, f) =>
+                                            {
+                                                ToolTip hint2 = new ToolTip();
+                                                hint2.SetToolTip(Ccc, Ccc.ToString());
+                                            };
+                                        }
+                                    }
                                 }
+
                             }
                         }
 
-                    }
+                    };
+                    MouseLeave += (sender, e) =>
+                    {
+
+                        {
+                            ////No mdFrameLoc - because it is on Form1                        
+                            //Point parentLoc = new Point(0, 0);
+                            //try { Cnst.jstTry.Dispose(); } catch (Exception) { }
+                            //try { Cnst.justTwo.Dispose(); } catch (Exception) { }
+                            //try { Cnst.justOne.Dispose(); } catch (Exception) { }
+                            //BackColor = ClrdBck;
+                            //Enabled = true;
+                            ////Cnst.jstTry = new MTltip(this, this, "Pokus!!!!", 70);
+                            ////Cnst.jstTry.BringToFront();
+                        }
+                    };
+                    KeyUp += (sender, e) =>
+                    {
+                        //if (e.KeyData == Keys.Enter)
+                        //{
+                        //    //No mdFrameLoc - because it is on Form1                        
+                        //    Point parentLoc = new Point(0, 0);
+                        //    try { Cnst.justTwo.Dispose(); } catch (Exception) { }
+                        //    try { Cnst.justOne.Dispose(); } catch (Exception) { }
+                        //    Cnst.jstTry = new MTltip(parentLoc, this);
+                        //    Cnst.jstTry.BringToFront();
+                        //}
+                    };
+                    FormClosing += (sender, e) =>
+                    {
+                        {//Xml create & save
+
+                            XmlDocument doc = new XmlDocument();
+                            XmlElement prgr = (XmlElement)doc.AppendChild(doc.CreateElement("prgrm"));
+
+                            prgr.SetAttribute("ExchangeRateChecker", this.Text + DateTime.Now.ToString());
+                            {//ShwOneCrrncsPosition-(prgrm InnerNode) 
+                                XmlElement ShwOneCrrncsPositionXml = (XmlElement)prgr.AppendChild(doc.CreateElement("ShwOneCrrncsPositionXml"));
+                                ShwOneCrrncsPositionXml.InnerText = "SOCPXmlInt";
+                                //ShwOneCrrncsPositionXml.Value = ShwOneCrrncsPosition.ToString();
+                                ShwOneCrrncsPositionXml.SetAttribute("ShwOneCrrncsPositionXmlInt", ShwOneCrrncsPosition.ToString());
+                            }//ShwOneCrrncsPosition-(prgrm InnerNode) 
+                            {//cBlok-InnerNode 
+                             //XmlElement cBlock = (XmlElement)prgr.AppendChild(doc.CreateElement("CBlok"));
+                             //cBlock.InnerText = "CBlock-InnerNode";
+                             ////cBlock.SetAttribute("cBlock", Cnst.C.UsVl.Text);
+                            }//cBlok-InnerNode
+                             //MessageBox.Show(doc.OuterXml);
+
+                            // Save the document to a file. White space is
+                            // preserved (no white space).
+                            doc.PreserveWhitespace = true;
+                            doc.Save("ExchangeRateChecker.xml");
+                        }//Xml create & save
+                    };
+                    {//XmlDocument load
+                        XmlDocument dcLoad = new XmlDocument();
+                        //dcLoad.Load("ExchangeRateChecker.xml");
+                        if (File.Exists(Application.StartupPath + @"\ExchangeRateChecker.xml"))
+                        {
+
+                            dcLoad.Load(Application.StartupPath + @"\ExchangeRateChecker.xml");
+
+                            XmlNodeList ExracheNodes = dcLoad.DocumentElement.ChildNodes;
+                            foreach (XmlNode nodeOne in ExracheNodes)
+                            {
+                                if (nodeOne.InnerText == "SOCPXmlInt")
+                                {
+
+                                    //MessageBox.Show("Name: " + nodeOne.Name.ToString());
+                                    ////MessageBox.Show("Value: " + nodeOne.Value.ToString());
+                                    //MessageBox.Show("InnerText: " + nodeOne.InnerText.ToString());
+                                    //MessageBox.Show("ChildNodes.Count: " + nodeOne.ChildNodes.Count.ToString());
+                                    //MessageBox.Show("BaseURI: " + nodeOne.BaseURI.ToString());
+                                    //MessageBox.Show("FirstChild.InnerText: " + nodeOne.FirstChild.InnerText.ToString());
+                                    //MessageBox.Show("InnerXml: "+nodeOne.InnerXml.ToString());
+                                    //MessageBox.Show("Attributes.Count: " + nodeOne.Attributes.Count.ToString());
+                                    string nodeAtt = "";
+                                    foreach (XmlAttribute xmlAttr in nodeOne.Attributes)
+                                    {
+                                        if (int.TryParse(xmlAttr.InnerText, out ShwOneCrrncsPosition))
+                                        {
+                                            int.TryParse(xmlAttr.InnerText, out ShwOneCrrncsPosition);
+
+                                        }
+                                        nodeAtt += xmlAttr.InnerText + Environment.NewLine;
+                                        nodeAtt += xmlAttr.Name + Environment.NewLine;
+                                    }
+                                    //MessageBox.Show(ShwOneCrrncsPosition.ToString());
+
+                                }
+                            }
+                            //MessageBox.Show("That file exists already.");
+                            //return;
+                        }
+
+                    }//XmlDocument load "ShwOneCrrncsPosition" - inteeger info
                 }
-
-            };
-            MouseLeave += (sender, e) =>
-            {
-
+            }//Manager stuff
+            {//Program stuff
                 {
-                    ////No mdFrameLoc - because it is on Form1                        
-                    //Point parentLoc = new Point(0, 0);
-                    //try { Cnst.jstTry.Dispose(); } catch (Exception) { }
-                    //try { Cnst.justTwo.Dispose(); } catch (Exception) { }
-                    //try { Cnst.justOne.Dispose(); } catch (Exception) { }
-                    //BackColor = ClrdBck;
-                    //Enabled = true;
-                    ////Cnst.jstTry = new MTltip(this, this, "Pokus!!!!", 70);
-                    ////Cnst.jstTry.BringToFront();
+
+                    ScSize();
+                    SniffIt();
+                    tcker.Tick += (sender, e) =>
+                    {
+                        DateTime now = DateTime.Now;
+                        Text = now.ToLongTimeString();
+
+                        if (!updateWatcher)
+                        {
+                            updateWatcher = true;
+                            if (tickCounter == 200)
+                            {
+                                tickCounter = 0;
+                                SniffIt();
+                            }
+                            else tickCounter++;
+                            updateWatcher = false;
+                        }
+                    };
+                    //tcker.Start();
+
+                    IntrScr();
                 }
-            };
-            KeyUp += (sender, e) =>
-            {
-                //if (e.KeyData == Keys.Enter)
-                //{
-                //    //No mdFrameLoc - because it is on Form1                        
-                //    Point parentLoc = new Point(0, 0);
-                //    try { Cnst.justTwo.Dispose(); } catch (Exception) { }
-                //    try { Cnst.justOne.Dispose(); } catch (Exception) { }
-                //    Cnst.jstTry = new MTltip(parentLoc, this);
-                //    Cnst.jstTry.BringToFront();
-                //}
-            };
-            FormClosing += (sender, e) =>
-            {
-                {//Xml create & save
-                    XmlDocument docxml = new XmlDocument();
-                    //xmlDoc.CreateNode(XmlNodeType.Element, "Records", null);
-                    //XElement n = new XElement("Customer", "Adventure Works");
-                    XmlDocument doc = new XmlDocument();
-                    //doc.AppendChild(n);
-                    //doc.CreateElement("Customer", "Adventure Works");
-                    //StartingNode
-                    XmlElement prgr = (XmlElement)doc.AppendChild(doc.CreateElement("prgrm"));
-                    //el.SetAttribute("Bar", "some & value");
-                    prgr.SetAttribute("ExchangeRateChecker", this.Text);
-                    {//aBlok-InnerNode 
-                        XmlElement aBlock = (XmlElement)prgr.AppendChild(doc.CreateElement("ABlock"));
-                        aBlock.InnerText = "ABlock-InnerNode";
-                        //aBlock.SetAttribute("aBlock", Cnst.C.UsVl.Text);
-                    }//aBlok-InnerNode
-                    {//cBlok-InnerNode 
-                        XmlElement cBlock = (XmlElement)prgr.AppendChild(doc.CreateElement("CBlok"));
-                        cBlock.InnerText = "CBlock-InnerNode";
-                        //cBlock.SetAttribute("cBlock", Cnst.C.UsVl.Text);
-                    }//cBlok-InnerNode
-                     //MessageBox.Show(doc.OuterXml);
+            }//Program stuff
 
-                    // Save the document to a file. White space is
-                    // preserved (no white space).
-                    doc.PreserveWhitespace = true;
-                    doc.Save("ExchangeRateChecker.xml");
-                }//Xml create & save
-            };
-            {//XmlDocument load
-                //XmlDocument dcLoad = new XmlDocument();
-                //dcLoad.Load("IndexOfWords.xml");
-
-                //XmlNode node = dcLoad.SelectSingleNode("ABlock");
-
-                ////XmlNodeList prop = node.SelectNodes("CBlock");
-
-                ////foreach (XmlNode item in prop)
-                //{
-                //    //items Temp = new items();
-                //    //Temp.AssignInfo(item);
-                //    //lstitems.Add(Temp);
-                //}
-                ////MessageBox.Show(dcLoad.OuterXml);
-            }//XmlDocument load
-            ScSize();
-            IntrScr();
-            //SizeChanged += (sender, e) => { RposCntrols(); };
-            //ClientSizeChanged += (sender, e) => { RposCntrols(); };
         }
-        //FUNCTION - TlStrip-------------------
-        void onOpenFileClick(object sender, EventArgs e)
+        private int phase = 0;
+        public int Phase
         {
-            MessageBox.Show("Abra kadabra, Open Sezame!");
-        }
-
-        void onAnimateOptionClick(object sender, EventArgs e)
-        {
-            if (inProgres)
+            get { return phase; }
+            set
             {
-                ticker.Stop();
-                inProgres = false;
-            }
-            else
-            {
-                ticker.Start();
-                inProgres = true;
-            }
-        }
+                phase = value;
 
-        protected override void OnClosed(EventArgs e)
-        {
-            //Cnst.S.remApp(this);
-            base.OnClosed(e);
-        }//FUNCTION - TlStrip-------------------
-
-
-        //FUNCTION - private-------------------
-        //private System.ComponentModel.IContainer components = null;
-        Chart chart1 = new Chart() { Dock=DockStyle.Fill};
-        //Rectangle chrt0 = new Chart() { Dock = DockStyle.Fill };
-        private void CreateChart(string crrncName)
-        {
-
-            {//1
-                
-            }//1
-
-            {
-                var series = new Series(crrncName);
-                Random rdn = new Random();
-                //chart1.Series.Add("test1");
-                //chart1.Series.Add("test2");
-                for (int i = 0; i < 50; i++)
+                if (phase > 1) phase = 0;
+                switch (phase)
                 {
-                    //chart1.Series["test1"].Points.AddXY(rdn.Next(0, 10), rdn.Next(0, 10));
-                    //chart1.Series["test2"].Points.AddXY(rdn.Next(0, 10), rdn.Next(0, 10));
+
+                    case 1:
+
+                        {
+                            nvrtd.Clear();
+                            decimal cnstLcl = new decimal();
+                            cnstLcl = 1 / 4 + 2;
+                            if (prcDateTemporary.Count > 1)
+                            {
+                                foreach (var prcData in prcDateTemporary)
+                                {
+                                    nvrtd.Add(new PriceData(prcData.Date, 1 / prcData.Price));
+                                }
+                                if (nvrtd.Count > 1)
+                                {
+                                    //PriceList.Clear();
+                                    PriceList = nvrtd;
+                                    DrawGraph();
+                                    txtStartDate.Text = nvrtd[0].Date.ToString() + Environment.NewLine + nvrtd[0].Price.ToString();
+                                    txtEndDate.Text = nvrtd[nvrtd.Count - 1].Date.ToString() + Environment.NewLine + nvrtd[nvrtd.Count - 1].Price.ToString();
+                                    Ttle.Text = "EUR - € vs " + Ttle.Text;
+                                }
+                            }
+                            else
+                            {
+                                if (CrrncyHstry.Count > 1)
+                                {
+                                    foreach (KeyValuePair<DateTime, decimal> kvp in CrrncyHstry)
+                                    {
+                                        nvrtd.Add(new PriceData(kvp.Key, cnstLcl - kvp.Value));
+                                    }
+                                    if (nvrtd.Count > 1)
+                                    {
+                                        PriceList = nvrtd;
+                                        DrawGraph();
+                                        txtStartDate.Text = nvrtd[0].Date.ToString() + Environment.NewLine + nvrtd[0].Price.ToString();
+                                        txtEndDate.Text = nvrtd[nvrtd.Count - 1].Date.ToString() + Environment.NewLine + nvrtd[nvrtd.Count - 1].Price.ToString();
+                                        Ttle.Text = "EUR - € vs " + Ttle.Text;
+                                    }
+                                }
+                            }
+                        }//invert
+
+                        break;
+                    case 0:
+
+                        {
+                            
+                            if (prcDateTemporary.Count > 1)
+                            {
+                                PriceList = prcDateTemporary;
+                                DrawGraph();
+                                txtStartDate.Text = prcDateTemporary[0].Date.ToString() + Environment.NewLine + prcDateTemporary[0].Price.ToString();
+                                txtEndDate.Text = prcDateTemporary[prcDateTemporary.Count - 1].Date.ToString() + Environment.NewLine + prcDateTemporary[prcDateTemporary.Count - 1].Price.ToString();
+                                Ttle.Text = CrrncsRates.ElementAt(ShwOneCrrncsPosition).Key;
+                            }
+                            else
+                            {
+                                if (CrrncyHstry.Count > 1)
+                                {
+                                    PriceList.Clear();
+                                    foreach (KeyValuePair<DateTime, decimal> kvp in CrrncyHstry)
+                                    {
+                                        PriceList.Add(new PriceData(kvp.Key, kvp.Value));
+                                    }
+                                    txtStartDate.Text = PriceList[0].Date.ToString() + Environment.NewLine + PriceList[0].Price.ToString();
+                                    txtEndDate.Text = PriceList[PriceList.Count - 1].Date.ToString() + Environment.NewLine + PriceList[PriceList.Count - 1].Price.ToString();
+                                    Ttle.Text = CrrncsRates.ElementAt(ShwOneCrrncsPosition).Key;
+                                    DrawGraph();
+                                }
+                            }
+                        }//reset
+
+                        break;
+                    default:
+                        break;
                 }
 
-                //chart1.Series["test1"].ChartType =SeriesChartType.FastLine;
-                //chart1.Series["test1"].Color = Color.Red;
-
-                //chart1.Series["test2"].ChartType =SeriesChartType.FastLine;
-                //chart1.Series["test2"].Color = Color.Blue;
-                // Frist parameter is X-Axis and Second is Collection of Y- Axis
-                series.Points.DataBindXY(new[] { crrncName }, new[] { 100 });
-                chart1.Series.Clear();
-                { chart1.Series.Add(series); }
-                chart1.Series[crrncName].ChartType = SeriesChartType.Line;
-                chart1.Titles.Clear();
-
-                chart1.Titles.Add(crrncName);
-                //BarExample();
-            }//0
-
-        }
-        public void BarExample()
-        {
-            //chart1.Series.Clear();
-
-            // Data arrays
-            string[] seriesArray = { "Cat", "Dog", "Bird", "Monkey" };
-            int[] pointsArray = { 2, 1, 7, 5 };
-
-            // Set palette
-            //chart1.Palette = ChartColorPalette.EarthTones;
-            //chart1.BackColor = Color.FromArgb(100, Color.Yellow);
-            ////chart1.ForeColor = Color.FromArgb(100, Color.AliceBlue);
-
-            // Set title
-            //this.chart1.Titles.Add("Animals");
-
-            // Add series.
-            for (int i = 0; i < seriesArray.Length; i++)
-            {
-                //Series series = chart1.Series.Add(seriesArray[i]);
-                //series.Points.Add(pointsArray[i]);
-                //chart1.DataBind();
-                
             }
-            chart1.DataBind();
         }
+        
+        //FUNCTION - private-------------------        
         private void ScSize()
         {
             //{
@@ -414,7 +448,6 @@ namespace ExRaChe
 
 
         }
-
         private void IntrScr()
         {
             ExRaCheDsgn();
@@ -699,49 +732,49 @@ namespace ExRaChe
                     //MessageBox.Show(CrrncsRates.Count.ToString());
                     if (CrrncsRates.Count > 0)
                     {
-                        {//SniffGraphData
-                            {//SniffGraphData
-                                string urlGrph = "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/usd.xml";
-                                XDocument docGrph = XDocument.Load(urlGrph);
-                                //XElement obs = docGrph.Descendants().Where(x => x.Name.LocalName == "Obs").FirstOrDefault();
+                        //{//SniffGraphData
+                        //    {//SniffGraphData
+                        //        string urlGrph = "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/usd.xml";
+                        //        XDocument docGrph = XDocument.Load(urlGrph);
+                        //        //XElement obs = docGrph.Descendants().Where(x => x.Name.LocalName == "Obs").FirstOrDefault();
 
-                                //string TIME_PERIOD = obs.Attribute("TIME_PERIOD").Value;
-                                //string OBS_VALUE = obs.Attribute("OBS_VALUE").Value;
-                                //MessageBox.Show(OBS_VALUE);
-                                //MessageBox.Show(TIME_PERIOD);
+                        //        //string TIME_PERIOD = obs.Attribute("TIME_PERIOD").Value;
+                        //        //string OBS_VALUE = obs.Attribute("OBS_VALUE").Value;
+                        //        //MessageBox.Show(OBS_VALUE);
+                        //        //MessageBox.Show(TIME_PERIOD);
 
-                                XNamespace xsi = "http://www.ecb.europa.eu/vocabulary/stats/exr/1 https://stats.ecb.europa.eu/stats/vocabulary/exr/1/2006-09-04/sdmx-compact.xsd";
-                                
-                                var obss = docGrph.Descendants()
-                                   .Where(x => x.Attribute("TIME_PERIOD") != null)
-                                   .Select(x => new {
-                                       TIME_PERIOD = (DateTime)x.Attribute("TIME_PERIOD"),
-                                       OBS_VALUE = (decimal)x.Attribute("OBS_VALUE")
-                                   });
-                                otpt = "";
-                                CrrncyHstry.Clear();
-                                //PriceList.Clear();
-                                foreach (var result in obss)
-                                {
-                                    CrrncyHstry.Add(result.TIME_PERIOD, result.OBS_VALUE);
-                                    //CrrncsRates.Add(result.Currency, result.Rate);
-                                    otpt += result.TIME_PERIOD.ToString() + ": " + result.OBS_VALUE.ToString() + Environment.NewLine;
-                                    //Console.WriteLine("{0}: {1}", result.Currency, result.Rate);
-                                    //MessageBox.Show(otpt);
-                                }
-                                
+                        //        XNamespace xsi = "http://www.ecb.europa.eu/vocabulary/stats/exr/1 https://stats.ecb.europa.eu/stats/vocabulary/exr/1/2006-09-04/sdmx-compact.xsd";
 
-                            }//SniffGraphData
-                        }//SniffGraphData
-                        
-                        PriceList.Clear();
-                        foreach (KeyValuePair<DateTime, decimal> kvp in CrrncyHstry)
-                        {
-                            PriceList.Add(new PriceData(kvp.Key, kvp.Value));
-                        }
-                        
+                        //        var obss = docGrph.Descendants()
+                        //           .Where(x => x.Attribute("TIME_PERIOD") != null)
+                        //           .Select(x => new {
+                        //               TIME_PERIOD = (DateTime)x.Attribute("TIME_PERIOD"),
+                        //               OBS_VALUE = (decimal)x.Attribute("OBS_VALUE")
+                        //           });
+                        //        otpt = "";
+                        //        CrrncyHstry.Clear();
+                        //        //PriceList.Clear();
+                        //        foreach (var result in obss)
+                        //        {
+                        //            CrrncyHstry.Add(result.TIME_PERIOD, result.OBS_VALUE);
+                        //            //CrrncsRates.Add(result.Currency, result.Rate);
+                        //            otpt += result.TIME_PERIOD.ToString() + ": " + result.OBS_VALUE.ToString() + Environment.NewLine;
+                        //            //Console.WriteLine("{0}: {1}", result.Currency, result.Rate);
+                        //            //MessageBox.Show(otpt);
+                        //        }
+
+
+                        //    }//SniffGraphData
+                        //}//SniffGraphData
+
+                        //PriceList.Clear();
+                        //foreach (KeyValuePair<DateTime, decimal> kvp in CrrncyHstry)
+                        //{
+                        //    PriceList.Add(new PriceData(kvp.Key, kvp.Value));
+                        //}
+
                         ShowOneCrrncy(CrrncsRates);
-                        
+
                     }
                 }//SniffIt
             }//SniffIt0
@@ -779,16 +812,107 @@ namespace ExRaChe
             Ttle.Text = crrncsRts.ElementAt(ShwOneCrrncsPosition).Key;
             Icn.Text = "http://www.ecb.europa.eu/shared/img/flags/" + Ttle.Text + icn.Text;
 
-            NNw.Text = crrncsRts.ElementAt(ShwOneCrrncsPosition).Value.ToString();
+            NCrr.Text = crrncsRts.ElementAt(ShwOneCrrncsPosition).Value.ToString() + " " + Ttle.Text + " buys 1 *** - " + DateTime.Now.ToString("MM/dd/yyyy");
             UrlImg.Text = "";
-            CreateChart(Ttle.Text);
+            //CreateChart(Ttle.Text);
             //shwPicture.Controls.Add(picGraph);
-            DrawGraph();
 
-            //foreach (string pctText in rss.ImageSource)
-            //{
-            //    UrlImg.Text += pctText + Environment.NewLine;
-            //}
+
+            {//SniffGraphData
+                {//SniffGraphData
+                    string urlGrph = "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/" + Ttle.Text.ToLower() + ".xml";
+                    XDocument docGrph = XDocument.Load(urlGrph);
+                    //XElement obs = docGrph.Descendants().Where(x => x.Name.LocalName == "Obs").FirstOrDefault();
+
+                    //string TIME_PERIOD = obs.Attribute("TIME_PERIOD").Value;
+                    //string OBS_VALUE = obs.Attribute("OBS_VALUE").Value;
+                    //MessageBox.Show(OBS_VALUE);
+                    //MessageBox.Show(TIME_PERIOD);
+
+                    XNamespace xsi = "http://www.ecb.europa.eu/vocabulary/stats/exr/1 https://stats.ecb.europa.eu/stats/vocabulary/exr/1/2006-09-04/sdmx-compact.xsd";
+                    //Series FREQ="D" CURRENCY="CZK" CURRENCY_DENOM="EUR"
+                    var Series = docGrph.Descendants()
+                    .Where(x => x.Attribute("CURRENCY_DENOM") != null)
+                    .Select(x => new {
+                        CURRENCY_DENOM = (string)x.Attribute("CURRENCY_DENOM")
+                    });
+                    foreach (var result in Series)
+                    {
+                        //CrrncyHstry.Add(result.TIME_PERIOD, result.OBS_VALUE);
+                        NCrr.Text = crrncsRts.ElementAt(ShwOneCrrncsPosition).Value.ToString() + " " + Ttle.Text + " buys 1 " + result.CURRENCY_DENOM+" "+DateTime.Now.ToString("MM/dd/yyyy");
+
+                    }
+
+
+                    var obss = docGrph.Descendants()
+                       .Where(x => x.Attribute("TIME_PERIOD") != null)
+                       .Select(x => new {
+                           TIME_PERIOD = (DateTime)x.Attribute("TIME_PERIOD"),
+                           OBS_VALUE = (decimal)x.Attribute("OBS_VALUE")
+                       });
+                    //otpt = "";
+                    CrrncyHstry.Clear();
+                    //PriceList.Clear();
+                    foreach (var result in obss)
+                    {
+                        CrrncyHstry.Add(result.TIME_PERIOD, result.OBS_VALUE);
+                        //CrrncsRates.Add(result.Currency, result.Rate);
+                        //otpt += result.TIME_PERIOD.ToString() + ": " + result.OBS_VALUE.ToString() + Environment.NewLine;
+                        //Console.WriteLine("{0}: {1}", result.Currency, result.Rate);
+                        //MessageBox.Show(otpt);
+                    }
+
+
+                }//SniffGraphData
+            }//SniffGraphData
+
+            PriceList.Clear();
+            foreach (KeyValuePair<DateTime, decimal> kvp in CrrncyHstry)
+            {
+                PriceList.Add(new PriceData(kvp.Key, kvp.Value));
+            }
+            txtStartDate.Text = PriceList[0].Date.ToString() + Environment.NewLine + PriceList[0].Price.ToString();
+            txtEndDate.Text = PriceList[PriceList.Count - 1].Date.ToString() + Environment.NewLine + PriceList[PriceList.Count - 1].Price.ToString();
+
+            DrawGraph();
+            
+            if (SrStart_date!=SrEnd_date&&SrStart_date != new DateTime(1, 1, 0001, 00, 00, 00) && SrEnd_date != new DateTime(1, 1, 0001, 00, 00, 00))
+            {
+                prcDateTemporary.Clear();
+
+                foreach (KeyValuePair<DateTime, decimal> kvp in CrrncyHstry)
+                {
+                    if (kvp.Key == SrStart_date | kvp.Key > SrStart_date && kvp.Key == SrEnd_date | kvp.Key < SrEnd_date)
+                    {
+                        prcDateTemporary.Add(new PriceData(kvp.Key, kvp.Value));
+                    }
+
+                }
+                if (prcDateTemporary.Count == 1)
+                {
+                    PriceList.Clear();
+                    prcDateTemporary.Add(new PriceData(prcDateTemporary[0].Date, prcDateTemporary[0].Price));
+                    //PriceList = prcDateTemporary;
+                    //DrawGraph();
+                    //txtStartDate.Text = prcDateTemporary[0].Date.ToString() + Environment.NewLine + prcDateTemporary[0].Price.ToString();
+                    //txtEndDate.Text = prcDateTemporary[prcDateTemporary.Count - 1].Date.ToString() + Environment.NewLine + prcDateTemporary[prcDateTemporary.Count - 1].Price.ToString();
+                    //ShowOneCrrncy(CrrncsRates);
+                }
+                if (prcDateTemporary.Count > 1)
+                {
+                    PriceList.Clear();
+                    PriceList = prcDateTemporary;
+                    DrawGraph();
+                    txtStartDate.Text = prcDateTemporary[0].Date.ToString() + Environment.NewLine + prcDateTemporary[0].Price.ToString();
+                    txtEndDate.Text = prcDateTemporary[prcDateTemporary.Count - 1].Date.ToString() + Environment.NewLine + prcDateTemporary[prcDateTemporary.Count - 1].Price.ToString();
+                    //ShowOneCrrncy(CrrncsRates);
+                }
+                //MessageBox.Show(prcDateTemporary.Count.ToString());
+            }
+            else
+            {
+                DrawGraph();
+            }
             if (Fake == false)
             {
                 //shwPicture.Load(UrlImg.Text);
@@ -797,14 +921,14 @@ namespace ExRaChe
             else
             {
                 //UrlImg.Text = "";
-            }//here goes the code that shows the stuff from one rss
+            }
 
         }
         // Draw the graph.
         private Bitmap GraphBm = null;
         private void DrawGraph()
         {
-            
+
             if (PriceList.Count < 1)
             {
                 shwPicture.Image = null;
@@ -812,7 +936,13 @@ namespace ExRaChe
                 DtoWMatrix = null;
                 return;
             }
+            //txtStartDate.Text = PriceList[0].Date.ToString() + Environment.NewLine + PriceList[0].Price.ToString();
+            //txtEndDate.Text = PriceList[PriceList.Count - 1].Date.ToString() + Environment.NewLine + PriceList[PriceList.Count - 1].Price.ToString();
+            //if (shwPicture.Height+txtStartDate.Height> shwPicture.Height + shwSummary.Height)
+            //{
 
+            //}
+            //txtStartDate.Invalidate();
             int wid = shwPicture.ClientSize.Width;
             int hgt = shwPicture.ClientSize.Height;
             GraphBm = new Bitmap(wid, hgt);
@@ -896,80 +1026,33 @@ namespace ExRaChe
         // Draw date and price lines for the mouse position.
         private void ShowDatePriceLines()
         {
-            if (LastTipNum < 0) return;
-
-            Bitmap bm = (Bitmap)GraphBm.Clone();
-            using (Graphics gr = Graphics.FromImage(bm))
+            try
             {
-                gr.Transform = WtoDMatrix;
-                PriceData data = PriceList[LastTipNum];
-                using (Pen pen = new Pen(Color.Red, 0))
+                if (LastTipNum < 0) return;
+
+                Bitmap bm = (Bitmap)GraphBm.Clone();
+                using (Graphics gr = Graphics.FromImage(bm))
                 {
-                    gr.DrawLine(pen, LastTipNum, 0, LastTipNum, 100000);
-                    float price = (float)data.Price;
-                    gr.DrawLine(pen, 0, price, 100 * PriceList.Count, price);
+                    gr.Transform = WtoDMatrix;
+                    PriceData data = PriceList[LastTipNum];
+                    using (Pen pen = new Pen(Color.Red, 0))
+                    {
+                        gr.DrawLine(pen, LastTipNum, 0, LastTipNum, 100000);
+                        float price = (float)data.Price;
+                        gr.DrawLine(pen, 0, price, 100 * PriceList.Count, price);
+                    }
                 }
-            }
 
-            shwPicture.Image = bm;
+                shwPicture.Image = bm;
+            }
+            catch (Exception) { }
 
         }
-        private void ShowOneRSS(RssNews rss)
-        {
-            ////here goes the code that shows the stuff from one rss
-            //Ttle.Text = rss.Title;
-            //NNw.Text = rss.Summary;
-            //UrlImg.Text = "";
-            //foreach (string pctText in rss.ImageSource)
-            //{
-            //    UrlImg.Text += pctText + Environment.NewLine;
-            //}
-            //if (Fake == false)
-            //{
-            //    shwPicture.Load(UrlImg.Text);
-
-            //}
-            //else
-            //{
-            //    UrlImg.Text = "";
-            //}//here goes the code that shows the stuff from one rss
-
-
-        }
-        private void ShowOnepage()
-        {
-            //here goes the code that shows the stuff from one rss
-            Ttle.Text = Dcmnt.Title;
-            NNw.Text = Dcmnt.Body.ToString();
-            UrlImg.Text = "";
-            foreach (string pctText in Dcmnt.All)
-            {
-                UrlImg.Text += pctText + Environment.NewLine;
-            }
-            if (Fake == false)
-            {
-                shwPicture.Load(UrlImg.Text);
-
-            }
-            else
-            {
-                UrlImg.Text = "";
-            }//here goes the code that shows the stuff from one rss
-
-
-            //use S.F.STATUS to acces Status Bar
-            // S.F.PANEL is used to acces this panel
-        }
-
-
-
-
-
         private void ExRaCheDsgn()
         {
-            
-            
-            Size = new Size(310, 100);
+
+
+            Size = new Size(325, 100);
             {//Prgrm
                 Prgrm.Width = ClientSize.Width;
                 Prgrm.Height = ClientSize.Height;
@@ -979,28 +1062,30 @@ namespace ExRaChe
                 Controls.Add(Prgrm);
             }//Prgrm
             {//Hrzntl
-                DateTime end_date = DateTime.Today;//.AddDays(-1);
-                DateTime start_date = end_date.AddMonths(-1);
-                txtStartDate.Text = start_date.ToString("yyyy-MM-dd");
-                txtEndDate.Text = end_date.ToString("yyyy-MM-dd");
+                {
+                    DateTime end_date = DateTime.Today;//.AddDays(-1);
+                    DateTime start_date = end_date.AddMonths(-1);
+                    txtStartDate.Text = start_date.ToString("dd/MM/yyyy");
+                    txtEndDate.Text = end_date.ToString("dd/MM/yyyy");
 
-                Hrzntl.Width = ClientSize.Width;
-                Hrzntl.Height = ClientSize.Height;
+                    Hrzntl.Width = ClientSize.Width;
+                    Hrzntl.Height = ClientSize.Height;
 
-                Hrzntl.BackColor = ClrdBck;
-                Hrzntl.Dock = DockStyle.Fill;
-                Hrzntl.BringToFront();
-                Hrzntl.Controls.Clear();
-                Hrzntl.BringToFront();
+                    Hrzntl.BackColor = ClrdBck;
+                    Hrzntl.Dock = DockStyle.Fill;
+                    Hrzntl.BringToFront();
+                    Hrzntl.Controls.Clear();
+                    Hrzntl.BringToFront();
+                }//hrz
                 {//DSG
-
-
-
-                    smtimsShown.Size = LstCntrl.Size;
+                    
+                    smtimsShown.Height = Hrzntl.Height;
+                    smtimsShown.Width = Hrzntl.Width;
                     smtimsShown.Width = LstCntrl.Width - 1;
                     smtimsShown.Location = new Point(0, 0);
                     smtimsShown.Dock = DockStyle.Fill;
                     {//SomeTimesShownDSGN
+
                         UrlImg.TextChanged += (sender, e) =>
                         {
                             if (UrlImg.Text != "" && Fake == false)
@@ -1011,17 +1096,18 @@ namespace ExRaChe
                             }
 
                         };
-                        //POLADIT CONTENT FONT
-                        shwSummary = new Label() { Width = smtimsShown.Width, Height = smtimsShown.Height, Location = new Point(0, 0), Dock = DockStyle.Fill, Text = NNw.Text, BackColor = ClrdBck, ForeColor = ClrdFrnt, Font = ContentFont };
-                        NNw.TextChanged += (sender, e) =>
-                        {
-                            shwSummary.Text = NNw.Text;
-                        };
-                        LstCntrl = shwSummary;
-                        smtimsShown.Controls.Add(LstCntrl);
 
-                        smtimsShown.Controls.Add(txtStartDate);
-                        smtimsShown.Controls.Add(txtEndDate);
+                        if (PriceList.Count < 1)
+                        {
+                            shwPicture.Image = null;
+                            WtoDMatrix = null;
+                            DtoWMatrix = null;
+                            txtStartDate = null;
+                            txtEndDate = null;
+                            return;
+                        }
+
+
                         shwPicture.MouseMove += (sender, e) =>
                         {
                             if (DtoWMatrix == null) return;
@@ -1046,13 +1132,60 @@ namespace ExRaChe
                         };
                         shwPicture.MouseEnter += (sender, e) =>
                         {
-                            if (PriceList.Count>0)
+                            if (PriceList.Count > 0)
                             {
                                 //txtStartDate=CrrncyHstry.First<KeyValuePair<DateTime,decimal>>
                             }
                         };
+                        tst = false;
+                        if (tst)
+                        {
+                            shwGraph = new GrphPanel(PriceList);
+                            smtimsShown.Controls.Add(shwGraph);
+                        }
+                        else
+                        {
+                            smtimsShown.Controls.Add(shwPicture);
+                        }
 
-                        smtimsShown.Controls.Add(shwPicture);
+                        txtStartDate.Text = PriceList[0].Date.ToString() + Environment.NewLine + PriceList[0].Price.ToString();
+                        txtEndDate.Text = PriceList[PriceList.Count - 1].Date.ToString() + Environment.NewLine + PriceList[PriceList.Count - 1].Price.ToString();
+                        txtStartDate.BackColor = txtEndDate.BackColor = ClrdBck;
+                        txtStartDate.ForeColor = txtEndDate.ForeColor = ClrdFrnt;
+                        smtimsShown.Controls.Add(txtEndDate);
+                        smtimsShown.Controls.Add(txtStartDate);
+                        {//somethingDsg
+                            {
+                                Panel dsgLocal = new Panel() { Dock = DockStyle.Top, /*TextAlign = ContentAlignment.MiddleLeft, */Width = smtimsShown.Width, Height = allwaysShown.Height / 9, Location = new Point(0, txtStartDate.Top - Height), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                //smtimsShown.Controls.Add(dsgLocal);
+                                //smtimsShown.Height += dsgLocal.Height;
+                                LblSrSDate = new Label() { Dock = DockStyle.Top, TextAlign = ContentAlignment.MiddleLeft, Width = smtimsShown.Width, Height = allwaysShown.Height / 6, Location = new Point(0, txtStartDate.Top - Height), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                if (SrStart_date != new DateTime(1, 1, 0001, 00, 00, 00))
+                                {
+                                    LblSrSDate.Text = SrStart_date.ToString();
+                                }
+                                smtimsShown.Controls.Add(LblSrSDate);
+                                //smtimsShown.Height += LblSrSDate.Height;
+
+                                dsgLocal = new Panel() { Dock = DockStyle.Bottom, /*TextAlign = ContentAlignment.MiddleLeft, */Width = smtimsShown.Width, Height = allwaysShown.Height / 9, Location = new Point(0, txtStartDate.Top - Height), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                //smtimsShown.Controls.Add(dsgLocal);
+                                //smtimsShown.Height += dsgLocal.Height;
+                                LblSrEDate = new Label() { Dock = DockStyle.Bottom, TextAlign = ContentAlignment.MiddleRight, Width = smtimsShown.Width, Height = allwaysShown.Height / 6, Location = new Point(0, txtStartDate.Bottom), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                if (SrEnd_date != new DateTime(1, 1, 0001, 00, 00, 00))
+                                {
+                                    LblSrEDate.Text = SrEnd_date.ToString();
+                                }
+                                smtimsShown.Controls.Add(LblSrEDate);
+                                //smtimsShown.Height += LblSrEDate.Height;
+
+
+                                //Panel test = new Panel() { Dock = DockStyle.Bottom, Width = smtimsShown.Width, Height = allwaysShown.Height / 3, Location = new Point(0, pnl.Bottom), BackColor = Color.FromArgb(191, ClrdBck), ForeColor = ClrdFrnt, Font = ContentFont };
+                                //Button pckStrtDateTest = new Button() { Dock = DockStyle.Bottom, Width = smtimsShown.Width, Height = allwaysShown.Height / 3, Location = new Point(0, pnl.Bottom), BackColor = Color.FromArgb(191, ClrdBck), ForeColor = ClrdFrnt, Font = ContentFont, Text = "Pick date" };
+                                //smtimsShown.Controls.Add(pckStrtDate);
+                                //smtimsShown.Controls.Add(test);
+                                //smtimsShown.Height += pckStrtDateTest.Height;
+                            }
+                        }//somethingDsg
 
                     }//SomeTimesShownDSGN
                     LstCntrl = smtimsShown;
@@ -1208,50 +1341,223 @@ namespace ExRaChe
                             LstCntrl = btnHldr;
                             allwaysShown.Controls.Add(LstCntrl);
                         }//btnholder
+                        shwSummary = new Label() { Dock = DockStyle.Bottom, TextAlign = ContentAlignment.MiddleCenter, Width = smtimsShown.Width, Height = smtimsShown.Height / 3, Location = new Point(0, 0), Text = NCrr.Text, BackColor = ClrdBck, ForeColor = ClrdFrnt, Font = ContentFont };
+                        NCrr.TextChanged += (sender, e) =>
+                        {
+                            shwSummary.Text = NCrr.Text;
+                        };
+                        LstCntrl = shwSummary;
+                        allwaysShown.Controls.Add(LstCntrl);
 
                         LstCntrl = allwaysShown;
                         Hrzntl.Controls.Add(LstCntrl);
                     }//AlwaysShownDSGN
-
+                   
                     {//HrzBottom
                         Hrzntl.Controls.Add(Sttus);
                         Height += Sttus.Height;
-                        Sttus.FFWD.ClickOnly += (sender, e) => 
+                        Sttus.FFWD.ClickOnly += (sender, e) =>
                         {
                             ShwOneCrrncsPosition = 0;
+                            RstUserDates();
                             ShowOneCrrncy(CrrncsRates);
-                            
                         }; // ffwd click
-                        Sttus.FWD.ClickOnly += (sender, e) => 
+                        Sttus.FWD.ClickOnly += (sender, e) =>
                         {
                             ShwOneCrrncsPosition--;
-                            if (ShwOneCrrncsPosition <0)
+                            if (ShwOneCrrncsPosition < 0)
                             {
                                 ShwOneCrrncsPosition = 0;
                             }
+                            RstUserDates();
                             ShowOneCrrncy(CrrncsRates);
                         }; // fwd click
-
-
-
-                        Sttus.BCK.ClickOnly += (sender, e) => 
+                        Sttus.BCK.ClickOnly += (sender, e) =>
                         {
                             ShwOneCrrncsPosition++;
-                            if (ShwOneCrrncsPosition> CrrncsRates.Count-1)
+                            if (ShwOneCrrncsPosition > CrrncsRates.Count - 1)
                             {
                                 ShwOneCrrncsPosition = CrrncsRates.Count - 1;
                             }
+                            RstUserDates();
                             ShowOneCrrncy(CrrncsRates);
                         }; // back click
-                        Sttus.REW.ClickOnly += (sender, e) => 
+                        Sttus.REW.ClickOnly += (sender, e) =>
                         {
                             ShwOneCrrncsPosition = CrrncsRates.Count - 1;
+                            RstUserDates();
                             ShowOneCrrncy(CrrncsRates);
                             //Width += 10;
                         }; // rewind click
 
+                        Sttus.StrtDate.ClickOnly += (sender, e) =>
+                        {
+                            
+                            {
+                                DateTimePicker dtp = new DateTimePicker() { Dock = DockStyle.Fill, Size = smtimsShown.Size, Location = new Point(0, 0) };
+                                //smtimsShown.Controls.Add(dtp);
+                                Controls.Add(dtp);
+                                dtp.Select();
+                                //dtp.BringToFront();
+                                SendKeys.Send("%{DOWN}");
+                                dtp.ValueChanged += (senderf, f) => //{ };
+                                {
+
+                                    {
+                                        int ryear = dtp.Value.Year;
+                                        int rmonth = dtp.Value.Month;
+                                        int rday = dtp.Value.Day;
+                                        int rhour = 0;
+                                        int rminute = 0;
+                                        int rsecond = 0;
+                                        int rmiliSc = 0;
+                                        SrStart_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+                                        if (Ttle.Text == "BGN" && SrStart_date >= new DateTime(2004, 5, 18, 00, 00, 00))
+                                        {
+                                            //18.5.2004
+
+                                            RstSrStD();
+                                            LblSrSDate.Text = "Requested data are not available";
+                                            //LblSrEDate.Text = "Requested data are not available";
+                                            LblSrSDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (SrStart_date > DateTime.Now.AddDays(-1))
+                                            {
+                                                ryear = DateTime.Now.Year;
+                                                rmonth = DateTime.Now.Month;
+                                                rday = DateTime.Now.AddDays(-1).Day;
+                                                //LblSrSDate.Text = "Please select date, that is in the past.";
+                                                RstSrStD();
+                                                SrStart_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+
+                                                //LblSrSDate.ForeColor = Color.SkyBlue;
+                                                SniffIt();
+                                            }
+                                        }
+                                        if (SrStart_date == SrEnd_date)
+                                        {
+                                            LblSrSDate.Text = "Please select different start date then: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString() + " is the same date as end day of interval";
+                                            RstSrStD();
+                                            LblSrSDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        if (SrStart_date < SrEnd_date)
+                                        {
+                                            LblSrSDate.Text = "Selected start date: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString();
+
+                                            SniffIt();
+                                            LblSrSDate.ForeColor = ClrdBck;
+                                        }
+                                        if (SrStart_date > SrEnd_date)
+                                        {
+                                            if (SrEnd_date!= new DateTime(1, 1, 0001, 00, 00, 00))
+                                            {
+                                                LblSrSDate.Text = "Please reselect. Start date is later date then the end date";
+                                                RstSrStD();
+                                                LblSrSDate.ForeColor = Color.SkyBlue;
+                                                return;
+                                            }
+                                            if (SrEnd_date == new DateTime(1, 1, 0001, 00, 00, 00))
+                                            {
+                                                LblSrSDate.Text = "Selected start date: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString();
+
+                                                SniffIt();
+                                                LblSrSDate.ForeColor = ClrdBck;
+                                            }
+                                        }
+                                        
+                                        
+                                    }
+
+                                };
+                                //ShowOneCrrncy(CrrncsRates);
+                            }
+                            
+                        }; // StrtDate click
+                        Sttus.EndDate.ClickOnly += (sender, e) =>
+                        {
+                            {
+                                DateTimePicker dtp = new DateTimePicker() { Dock = DockStyle.Fill, Size = smtimsShown.Size, Location = new Point(0, 0) };
+                                //smtimsShown.Controls.Add(dtp);
+                                Controls.Add(dtp);
+                                dtp.Select();
+                                //dtp.BringToFront();
+                                SendKeys.Send("%{DOWN}");
+                                dtp.ValueChanged += (senderf, f) => //{ };
+                                {
+                                    {
+                                        int ryear = dtp.Value.Year;
+                                        int rmonth = dtp.Value.Month;
+                                        int rday = dtp.Value.Day;
+                                        int rhour = 0;
+                                        int rminute = 0;
+                                        int rsecond = 0;
+                                        int rmiliSc = 0;
+                                        SrEnd_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+                                        if (Ttle.Text == "BGN" && SrEnd_date >= new DateTime(2004, 5, 18, 00, 00, 00))
+                                        {
+                                            //18.5.2004
+
+                                            RstSrEnD();
+                                            LblSrEDate.Text = "Requested data are not available";
+                                            //LblSrEDate.Text = "Requested data are not available";
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (SrEnd_date>DateTime.Now)
+                                            {
+                                                RstSrEnD();
+                                                SrEnd_date = DateTime.Now;
+                                                LblSrEDate.Text = "Selected date is:" + SrEnd_date.ToString("MM/dd/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                                //LblSrEDate.Text = "Requested data are not available";
+                                                //LblSrEDate.Text = "Requested data are not available";
+                                                LblSrEDate.ForeColor = ClrdBck;
+                                                SniffIt();
+                                            }
+                                        }
+                                        if (SrEnd_date == SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Please select different start date then: " + SrEnd_date.ToString("dd/MM/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                            RstSrEnD();
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        if (SrEnd_date < SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Selected end day comes sooner then start date.";
+                                            RstSrEnD();
+                                            //
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                        }
+                                        if (SrEnd_date > SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Selected date is:"+ SrEnd_date.ToString("MM/dd/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                            SniffIt();
+                                            LblSrEDate.ForeColor = ClrdBck;
+                                            //return;
+                                        }
+
+
+                                    }
+
+                                };
+                                //ShowOneCrrncy(CrrncsRates);
+                            }
+                            
+                        }; // EndDate click
+                        Sttus.EUR.ClickOnly += (sender, e) =>
+                        {
+                            Phase++;
+                        }; // EUR click
+                        //Sttus.Items.Add(LnguageContextMenuStrip);
                     }//HrzBottom
 
+                    
                     ClientSizeChanged += (sender, e) =>
                     {
                         if (Width > MSzz.Width && ShwNws == false)
@@ -1421,11 +1727,94 @@ namespace ExRaChe
                         }
 
                     };
+                    
                 }//DSG
-
-
-
+                
                 Prgrm.Controls.Add(Hrzntl);
+                {//LngButtonDsg
+                    {
+                        Button lng = new Button() { Dock = DockStyle.Top, Height = 22,Width=Hrzntl.Width,Location=new Point(0,0),BackColor=ClrdBck,ForeColor=ClrdFrnt,Text="Language",TextAlign=ContentAlignment.MiddleCenter };
+                        lng.Click += (sender, e) => 
+                        {
+                            
+                            Form nwFrm = new Form() { Location= PointToScreen(MousePosition), Size=Prgrm.Size,BackColor=ClrdBck,ForeColor=ClrdFrnt};
+                            nwFrm.Click += (senderf, f) =>
+                            {
+                                nwFrm.Close();
+                            };
+                            nwFrm.BringToFront();
+                            nwFrm.Show();
+                            
+                            {//nwFrmDSG
+                                {
+                                    Panel btnHldr_nwFrm = new Panel();
+                                    btnHldr_nwFrm.Height = nwFrm.Height;
+                                    btnHldr_nwFrm.Width = nwFrm.Width;
+                                    btnHldr_nwFrm.Location = new Point(0, 0);
+                                    btnHldr_nwFrm.BackColor = ClrdBck;
+                                    btnHldr_nwFrm.Dock = DockStyle.Fill;
+
+                                    Button cz = new Button() { Size = new Size(btnHldr_nwFrm.Width/2, btnHldr_nwFrm.Height),Location=new Point(0,0), Anchor = AnchorStyles.Left | AnchorStyles.Top, Text = "Čeština" };
+
+                                    btnHldr_nwFrm.ClientSizeChanged += (senderh, h) => { cz.Width = btnHldr_nwFrm.Width/2; cz.Height = btnHldr_nwFrm.Height; };
+                                    
+                                    cz.Font = ContentFont;
+                                    cz.Click += (senderh, h) =>
+                                    {
+                                        nwFrm.Close();
+
+                                    };
+                                    cz.MouseHover += (senderh, h) =>
+                                    {
+                                        ToolTip hnt = new ToolTip();
+                                        hnt.SetToolTip(cz, "Nastavte češtinu jako výchozí jazyk aplikace");
+                                    };
+                                    btnHldr_nwFrm.Controls.Add(cz);
+
+
+
+                                    //pstdTime = new Label();
+                                    Button eng = new Button(); //{ Size = new Size(Prgrm.Height, Prgrm.Width / 2), Dock = DockStyle.Right, Text = "English" };
+                                    eng.Text = "English";
+                                    eng.BackColor = ClrdBck;
+                                    eng.ForeColor = ClrdFrnt;
+                                    eng.Font = NfoFont;
+                                    eng.TextAlign = ContentAlignment.MiddleCenter;
+                                    
+                                    eng.Size = new Size(btnHldr_nwFrm.Width, btnHldr_nwFrm.Height / 2);
+                                    eng.Location = new Point(cz.Right+1,0);
+                                    eng.Anchor = AnchorStyles.Right-eng.Width | AnchorStyles.Top;
+                                    btnHldr_nwFrm.ClientSizeChanged += (senderh, h) => { eng.Width = btnHldr_nwFrm.Width / 2; eng.Height = btnHldr_nwFrm.Height; };
+
+                                    eng.MouseHover += (senderh, h) =>
+                                    {
+                                        ToolTip hnt = new ToolTip();
+                                        hnt.SetToolTip(eng, "Set english as the main language of application");
+                                    };
+                                    eng.Click += (senderh, h) =>
+                                    {
+                                        nwFrm.Close();
+
+                                    };
+                                    btnHldr_nwFrm.Controls.Add(eng);
+                                    LstCntrl = btnHldr_nwFrm;
+                                    nwFrm.Controls.Add(LstCntrl);
+                                }//btnholder
+                            }//nwFrmDSG
+                            nwFrm.SizeChanged += (senderf, f) =>
+                            {
+                                //cz.Width = Prgrm.Width / 2;
+                                //eng.Width = Prgrm.Width / 2;
+                            };
+
+                            //nwFrm.Controls.Add(cz);
+                            //nwFrm.Controls.Add(eng);
+                            //nwFrm.Controls.Add(Hrzntl);
+                        };
+                        Prgrm.Controls.Add(lng);
+                        Height += lng.Height;
+                    }
+                }//LngButtonDsg
                 MSzz = new Size(Width, (Height));// + S.F.STATUS.Height);
                 foreach (Control c in Hrzntl.Controls)
                 {
@@ -1489,21 +1878,35 @@ namespace ExRaChe
 
 
 
-
-
-
-
-
-
             ClientSizeChanged += (sender, e) =>
             {
                 Prgrm.Invalidate();
             };
 
+        }//DSGN
+        private void RstUserDates()
+        {
+            SrStart_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            LblSrSDate.Text = "";
+            LblSrEDate.Text = "";
+        }
+        private void RstSrEnD()
+        {
+            SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            //SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            //LblSrSDate.Text = "";
+            LblSrEDate.Text = "";
+        }
+        private void RstSrStD()
+        {
+            SrStart_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            //SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            LblSrSDate.Text = "";
+            //LblSrEDate.Text = "";
         }//FUNCTION - private----
 
-        //FUNCTION PUBLIC----------------------------------------------    
-
+        //FUNCTION PUBLIC----------------------------------------------  
         public void MyClrInvrt(Color cl)
         {
             ClrInver = Color.FromArgb(cl.ToArgb() ^ 0xffffff);
@@ -1576,8 +1979,7 @@ namespace ExRaChe
         public void RposCntrols()
         {//Position of added controls
             Invalidate();
-            //MessageBox.Show(Cnst.Source.ClientRectangle.Size.ToString());
-
+            
             foreach (Control c in Controls)
             {
                 //c.ForeColor = Color.FromArgb(32, 78, 70);
@@ -1600,94 +2002,7 @@ namespace ExRaChe
 
                 }
             }
-            //Controls.Clear();
-            //HdrDsgn();
-            {//Hldr
-                //Hldr.Size = Cnst.ScreeLftOver.Size;
-                //Hldr.Location = Cnst.ScreeLftOver.Location;
-                //Hldr.BackColor = Color.Transparent;
-                //Hldr.BackColor = Color.FromArgb(70, Color.Violet);
-                //Hldr.BringToFront();
-                //Hldr.Invalidate();
-                //Controls.Add(Hldr);
-            }//Hldr
-             //Hrzntl.Location = Cnst.ScreeLftOver.Location;
-            {//Hrzntl
-             //Hrzntl.Location = Cnst.ScreeLftOver.Location;
-             //Hrzntl.BackColor = Color.Blue;
-             ////Hrzntl.Dock = DockStyle.Bottom;
-             //Hrzntl.BringToFront();
-             ////Hrzntl.Width = Cnst.ScreeLftOver.Width;
-             ////Hrzntl.Height = Cnst.ScreeLftOver.Height;
-             //Hrzntl.Controls.Clear();
 
-                //Rectangle pnlScreen = Cnst.ScreeLftOver;//new Rectangle(Location.X, Location.Y, Cnst.ScreeLftOver.Width, Cnst.ScreeLftOver.Height);
-                //int w = Width >= pnlScreen.Width ? pnlScreen.Width : (pnlScreen.Width + Hrzntl.Width) / 2;
-                //int h = Height >= pnlScreen.Height ? pnlScreen.Height : (pnlScreen.Height + Hrzntl.Height) / 2;
-                //Size = new Size(w, h);
-
-                //Hrzntl.Size = new Size(w / 10 * 9, h / 10 * 9);
-                //Hrzntl.Location = new Point((Width - Hrzntl.Width) / 2, (Height - Hrzntl.Height) / 2);
-                //Hrzntl.BringToFront();
-
-                //{//VrtLft
-                //    VrtLft = new Panel();
-
-                //    VrtLft.Width = Hrzntl.Width / 2;
-                //    VrtLft.Height = Hrzntl.Height;
-                //    VrtLft.Dock = DockStyle.Left;
-                //    VrtLft.BackColor = Color.FromArgb(90, Color.WhiteSmoke);
-
-
-                //    {//Panel A1
-                //        HrzLftTop = new Panel();
-                //        HrzLftTop.Width = VrtLft.Width;
-                //        HrzLftTop.Height = VrtLft.Height / 2;
-                //        HrzLftTop.Dock = DockStyle.Top;
-                //        HrzLftTop.BackColor = Color.FromArgb(90, Color.Yellow);
-
-
-
-                //        RichTextBox usrText = new RichTextBox(); usrText.Font = MFnt;
-
-                //        usrText.BorderStyle = BorderStyle.None;
-                //        usrText.BackColor = ClrdBck;
-                //        usrText.ForeColor = ClrdFrnt;
-                //        usrText.Size = new Size(HrzLftTop.Width, HrzLftTop.Height / 3);
-                //        usrText.Dock = DockStyle.Fill;
-                //        usrText.Location = new Point(2, 2);
-                //        HrzLftTop.Controls.Add(usrText);
-                //    }//Panel A1
-                //    {//Panel B1
-                //        HrzLftDwn = new Panel();
-                //        HrzLftDwn.Width = VrtLft.Width;
-                //        HrzLftDwn.Height = VrtLft.Height / 2;
-                //        HrzLftDwn.Dock = DockStyle.Bottom;
-                //        HrzLftDwn.BackColor = Color.FromArgb(90, Color.LimeGreen);
-                //        //HrzLftDwn.AutoScroll = true;
-
-                //        PnTxt usrText = new PnTxt(this,new Point(2, 2), new Size(HrzLftDwn.Width, HrzLftDwn.Height), ClrdFrnt, MFnt);
-                //        usrText.BorderStyle = BorderStyle.None;
-                //        //usrText.BackColor = ClrdBck;
-                //        //usrText.ForeColor = ClrdFrnt;
-                //        //usrText.Size = new Size(HrzLftDwn.Width, HrzLftDwn.Height / 3);
-                //        usrText.Dock = DockStyle.Fill;
-                //        //usrText.Location = new Point(2, 2);
-
-                //        HrzLftDwn.Controls.Add(usrText);
-                //    }//Panel B1
-
-                //    VrtLft.Controls.Add(HrzLftDwn);
-                //    VrtLft.Controls.Add(HrzLftTop);
-                //}//VrtLft
-
-
-
-                //Hrzntl.Controls.Add(VrtLft);
-
-
-            }//Hrzntl
-             //Controls.Add(Hrzntl);
         }
         public void PrintScreen()
         {
@@ -1702,7 +2017,8 @@ namespace ExRaChe
             }
             catch (Exception) { }
             //!!SAVE PICTURE FILE ON DISC!!---------------------------------
-        }
+        }//FUNCTION PUBLIC----------------------------------------------  
+
 
     }
 
