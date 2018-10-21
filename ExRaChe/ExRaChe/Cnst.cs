@@ -119,40 +119,7 @@ namespace ExRaChe
         //public static CntxtMenu justOne;
         //public static MTltip jstTry;
         //public static BtnCntxtMenu justTwo;
-        public static Form1 Source;
-        public static string SaveIt = "";
-        public static void RegInstance(Form1 source)
-        {
-            Source = source;
-            Ticker.Interval = 2250;
-            //Save info
-            Source.FormClosing += (sender, e) =>
-            {
-                //My own working Save for all controls!
-                string saveIt = "";
-                string autoPath = System.Windows.Forms.Application.StartupPath;
-                //foreach (HookZoom p in Cnst.PcBR)
-                //{//pores jeste homepath obrazku - pri presunu programu z discu na disk budou jinak komplikace
-                //    //string ks = p.FrontTexturePath.Remove(0,autoPath.Length);
-                //    //saveIt = +'/' + p.Class + '/' + p.ChClass + '/' + p.Counter + '/' + p.MyShape + '/' + (p.FrontTexturePath) + '/' + p.BackTexturePath + '/' + p.OriLoca.X + '/' + p.OriLoca.Y + '/' + p.OriginSize.Width + '/' + p.OriginSize.Height + '/' + p.Facing + '%';
-
-                //    SaveIt += saveIt;
-
-                //}
-
-                autoPath += "//DefaultSave.tod";
-                System.IO.File.WriteAllText(autoPath, SaveIt.ToString());
-                //My own working Save for all controls!
-                //MessageBox.Show(SaveIt.ToString());
-            };//Save info
-
-            //Load info
-
-            //Load info
-
-
-
-        }
+        
         public static List<Control> DrwClnt = new List<Control>();
         public static List<Rectangle> RmckClnt = new List<Rectangle>();
         //public static List<PcBR3D> PcBRUniversals = new List<PcBR3D>();

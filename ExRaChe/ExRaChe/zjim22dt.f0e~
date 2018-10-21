@@ -1058,4 +1058,1736 @@ namespace ExRaChe
             PointF[] points =
             {
                 new PointF(dxmin, dymax),
+                new PointF(dxmax, dymax),
+                new PointF(dxmin, dymin),
+            };
+            return new Matrix(rect, points);
+        }
+
+        // Display the data in a tooltip.
+        private int LastTipNum = -1;
+        // Draw date and price lines for the mouse position.
+        private void ShowDatePriceLines()
+        {
+            try
+            {
+                if (LastTipNum < 0) return;
+
+                Bitmap bm = (Bitmap)GraphBm.Clone();
+                using (Graphics gr = Graphics.FromImage(bm))
+                {
+                    gr.Transform = WtoDMatrix;
+                    PriceData data = PriceList[LastTipNum];
+                    using (Pen pen = new Pen(Color.Red, 0))
+                    {
+                        gr.DrawLine(pen, LastTipNum, 0, LastTipNum, 100000);
+                        float price = (float)data.Price;
+                        gr.DrawLine(pen, 0, price, 100 * PriceList.Count, price);
+                    }
+                }
+
+                shwPicture.Image = bm;
+            }
+            catch (Exception) { }
+
+        }
+
+
+        private void ExRaCheDsgn()
+        {
+
+
+            Size = new Size(325, 100);
+            {//Prgrm
+                Prgrm.Width = ClientSize.Width;
+                Prgrm.Height = ClientSize.Height;
+                Prgrm.Location = new Point(0, 0);
+                Prgrm.Dock = DockStyle.Fill;
+                Prgrm.Visible = false;
+                Controls.Add(Prgrm);
+            }//Prgrm
+            {//Hrzntl
+                {
+                    DateTime end_date = DateTime.Today;//.AddDays(-1);
+                    DateTime start_date = end_date.AddMonths(-1);
+                    txtStartDate.Text = start_date.ToString("dd/MM/yyyy");
+                    txtEndDate.Text = end_date.ToString("dd/MM/yyyy");
+
+                    Hrzntl.Width = ClientSize.Width;
+                    Hrzntl.Height = ClientSize.Height;
+
+                    Hrzntl.BackColor = ClrdBck;
+                    Hrzntl.Dock = DockStyle.Fill;
+                    Hrzntl.BringToFront();
+                    Hrzntl.Controls.Clear();
+                    Hrzntl.BringToFront();
+                }//hrz
+                {//DSG
+                    
+                    smtimsShown.Height = Hrzntl.Height;
+                    smtimsShown.Width = Hrzntl.Width;
+                    smtimsShown.Width = LstCntrl.Width - 1;
+                    smtimsShown.Location = new Point(0, 0);
+                    smtimsShown.Dock = DockStyle.Fill;
+                    {//SomeTimesShownDSGN
+
+                        UrlImg.TextChanged += (sender, e) =>
+                        {
+                            if (UrlImg.Text != "" && Fake == false)
+                            {
+
+                                shwPicture.Load(UrlImg.Text);
+
+                            }
+
+                        };
+
+                        if (PriceList.Count < 1)
+                        {
+                            shwPicture.Image = null;
+                            WtoDMatrix = null;
+                            DtoWMatrix = null;
+                            txtStartDate = null;
+                            txtEndDate = null;
+                            return;
+                        }
+
+
+                        shwPicture.MouseMove += (sender, e) =>
+                        {
+                            if (DtoWMatrix == null) return;
+
+                            // Get the point in world coordinates.
+                            PointF[] points = { new PointF(e.X, e.Y) };
+                            DtoWMatrix.TransformPoints(points);
+
+                            // Get the tip number.
+                            int tip_num = -1;
+                            if (points[0].X >= 0) tip_num = (int)points[0].X;
+                            if (tip_num >= PriceList.Count) tip_num = -1;
+
+                            if (LastTipNum == tip_num) return;
+                            LastTipNum = tip_num;
+                            //Console.WriteLine(LastTipNum);
+
+                            string tip = null;
+                            if (tip_num >= 0) tip = PriceList[tip_num].ToString();
+                            tipData.SetToolTip(shwPicture, tip);
+                            ShowDatePriceLines();
+                        };
+                        shwPicture.MouseEnter += (sender, e) =>
+                        {
+                            if (PriceList.Count > 0)
+                            {
+                                //txtStartDate=CrrncyHstry.First<KeyValuePair<DateTime,decimal>>
+                            }
+                        };
+                        tst = false;
+                        if (tst)
+                        {
+                            shwGraph = new GrphPanel(PriceList);
+                            smtimsShown.Controls.Add(shwGraph);
+                        }
+                        else
+                        {
+                            smtimsShown.Controls.Add(shwPicture);
+                        }
+
+                        txtStartDate.Text = PriceList[0].Date.ToString() + Environment.NewLine + PriceList[0].Price.ToString();
+                        txtEndDate.Text = PriceList[PriceList.Count - 1].Date.ToString() + Environment.NewLine + PriceList[PriceList.Count - 1].Price.ToString();
+                        txtStartDate.BackColor = txtEndDate.BackColor = ClrdBck;
+                        txtStartDate.ForeColor = txtEndDate.ForeColor = ClrdFrnt;
+                        smtimsShown.Controls.Add(txtEndDate);
+                        smtimsShown.Controls.Add(txtStartDate);
+                        {//somethingDsg
+                            {
+                                Panel dsgLocal = new Panel() { Dock = DockStyle.Top, /*TextAlign = ContentAlignment.MiddleLeft, */Width = smtimsShown.Width, Height = allwaysShown.Height / 9, Location = new Point(0, txtStartDate.Top - Height), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                //smtimsShown.Controls.Add(dsgLocal);
+                                //smtimsShown.Height += dsgLocal.Height;
+                                LblSrSDate = new Label() { Dock = DockStyle.Top, TextAlign = ContentAlignment.MiddleLeft, Width = smtimsShown.Width, Height = allwaysShown.Height / 6, Location = new Point(0, txtStartDate.Top - Height), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                if (SrStart_date != new DateTime(1, 1, 0001, 00, 00, 00))
+                                {
+                                    LblSrSDate.Text = SrStart_date.ToString();
+                                }
+                                smtimsShown.Controls.Add(LblSrSDate);
+                                //smtimsShown.Height += LblSrSDate.Height;
+
+                                dsgLocal = new Panel() { Dock = DockStyle.Bottom, /*TextAlign = ContentAlignment.MiddleLeft, */Width = smtimsShown.Width, Height = allwaysShown.Height / 9, Location = new Point(0, txtStartDate.Top - Height), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                //smtimsShown.Controls.Add(dsgLocal);
+                                //smtimsShown.Height += dsgLocal.Height;
+                                LblSrEDate = new Label() { Dock = DockStyle.Bottom, TextAlign = ContentAlignment.MiddleRight, Width = smtimsShown.Width, Height = allwaysShown.Height / 6, Location = new Point(0, txtStartDate.Bottom), BackColor = Color.FromArgb(191, ClrdFrnt), ForeColor = ClrdFrnt, Font = NfoFont };
+                                if (SrEnd_date != new DateTime(1, 1, 0001, 00, 00, 00))
+                                {
+                                    LblSrEDate.Text = SrEnd_date.ToString();
+                                }
+                                smtimsShown.Controls.Add(LblSrEDate);
+                                //smtimsShown.Height += LblSrEDate.Height;
+
+
+                                //Panel test = new Panel() { Dock = DockStyle.Bottom, Width = smtimsShown.Width, Height = allwaysShown.Height / 3, Location = new Point(0, pnl.Bottom), BackColor = Color.FromArgb(191, ClrdBck), ForeColor = ClrdFrnt, Font = ContentFont };
+                                //Button pckStrtDateTest = new Button() { Dock = DockStyle.Bottom, Width = smtimsShown.Width, Height = allwaysShown.Height / 3, Location = new Point(0, pnl.Bottom), BackColor = Color.FromArgb(191, ClrdBck), ForeColor = ClrdFrnt, Font = ContentFont, Text = "Pick date" };
+                                //smtimsShown.Controls.Add(pckStrtDate);
+                                //smtimsShown.Controls.Add(test);
+                                //smtimsShown.Height += pckStrtDateTest.Height;
+                            }
+                        }//somethingDsg
+
+                    }//SomeTimesShownDSGN
+                    LstCntrl = smtimsShown;
+                    Hrzntl.Controls.Add(LstCntrl);
+                    smtimsShown.Hide();
+
+                    allwaysShown = new Panel();
+                    allwaysShown.BackColor = ClrdBck;
+                    allwaysShown.Height = Hrzntl.Height;
+                    allwaysShown.Width = Hrzntl.Width;
+                    allwaysShown.Location = new Point(0, 0);
+                    allwaysShown.Dock = DockStyle.Fill;
+                    {//AlwaysShownDSGN
+                        Size szz = new Size(allwaysShown.Width - (allwaysShown.Width / DsgnModifierWdth), LstCntrl.Height);
+                        Point spwn = new Point(LstCntrl.Right, LstCntrl.Top);
+                        ttle = new Label() { TextAlign = ContentAlignment.MiddleCenter, Size = szz, Location = new Point(0, 0), Text = Ttle.Text, BackColor = ClrdBck, ForeColor = ClrdFrnt, Font = TitleFont };
+                        Ttle.TextChanged += (sender, e) =>
+                        {
+                            ttle.Text = Ttle.Text;
+                        };
+                        ttle.Dock = DockStyle.Fill;
+                        ttle.MouseDown += (sender, e) =>
+                        {
+                            if (e.Button == MouseButtons.Left)
+                            {
+                                if (ShwNws == false)
+                                {
+                                    {//Show
+                                        ShwNws = true;
+
+                                        smtimsShown.Dock = DockStyle.Fill;
+                                        allwaysShown.Dock = DockStyle.Top;
+                                        allwaysShown.Height = MSzz.Height / 2; //(MSzz.Height - F.STATUS.Height) / 2;
+
+                                        Height = MSzz.Height * 2;// + 22;
+                                        smtimsShown.Show();
+                                        DrawGraph();
+                                    }//Show
+                                }
+                                else
+                                {
+                                    {//Hide
+                                        ShwNws = false;
+                                        smtimsShown.Invalidate();
+                                        Height = MSzz.Height;// + 22;// + S.F.STATUS.Height;
+                                        smtimsShown.Dock = DockStyle.Bottom;
+                                        smtimsShown.Hide();
+                                        allwaysShown.Height = (MSzz.Height);// - S.F.STATUS.Height);
+                                        allwaysShown.Dock = DockStyle.Fill;
+                                    }//Hide
+                                }
+
+                            }
+
+
+                        };
+
+
+                        LstCntrl = ttle;
+                        allwaysShown.Controls.Add(LstCntrl);
+
+                        {
+                            //Panel btnHldr = new Panel();
+                            btnHldr.Height = allwaysShown.Height;
+                            btnHldr.Width = allwaysShown.Width / DsgnModifierWdth;
+                            btnHldr.Location = new Point(0, 0);
+                            btnHldr.BackColor = ClrdBck;
+                            btnHldr.Dock = DockStyle.Left;
+
+                            icn = new PictureBox();
+                            icn.Text = ".gif";
+                            icn.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                            icn.Location = new Point(0, 0);
+                            icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                            btnHldr.ClientSizeChanged += (sender, e) => { icn.Width = btnHldr.Width; icn.Height = btnHldr.Height / 2; };
+                            icn.BackColor = ClrdBck;
+                            icn.ForeColor = ClrdFrnt;
+                            icn.Font = ContentFont;
+                            icn.Click += (sender, e) =>
+                            {
+                                ToolTip hnt = new ToolTip();
+                                hnt.SetToolTip(icn, "Icon was clicked");
+
+                            };
+                            icn.SizeMode = PictureBoxSizeMode.Zoom;
+                            Icn.TextChanged += (sender, e) =>
+                            {
+                                icn.Load(Icn.Text);
+                            };
+                            try
+                            {
+                                icn.Load("http://www.ecb.europa.eu/shared/img/flags/" + Ttle.Text + icn.Text);
+                            }
+                            catch (Exception)
+                            {
+
+                                MessageBox.Show("Wrong URL adress, icone was not found.");
+                            }
+
+                            btnHldr.Controls.Add(icn);
+
+
+
+                            //pstdTime = new Label();
+                            pstdTime.BackColor = ClrdBck;
+                            pstdTime.ForeColor = ClrdFrnt;
+                            pstdTime.Font = NfoFont;
+                            pstdTime.TextAlign = ContentAlignment.MiddleCenter;
+                            string mnts = "";
+                            if (DateTime.Now.Minute < 10)
+                            {
+
+                                mnts = "0" + DateTime.Now.Minute.ToString();
+                                //MessageBox.Show(mnts);
+                            }
+                            else
+                            {
+                                mnts = DateTime.Now.Minute.ToString();
+                            }
+                            string scnds = "";
+
+                            if (DateTime.Now.Second < 10)
+                            {
+                                scnds = "0" + (DateTime.Now.Second.ToString());
+                                //MessageBox.Show(scnds);
+                            }
+                            else
+                            {
+                                scnds = DateTime.Now.Second.ToString();
+                            }
+                            pstdTime.Text = DateTime.Now.Hour.ToString() + ":" + mnts + ":" + scnds;
+                            pstdTime.TextChanged += (sender, e) =>
+                            {
+                                Invalidate();
+                                //ttle.Text = Ttle.Text;
+                            };
+                            pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                            pstdTime.Location = new Point(0, icn.Bottom);
+                            pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                            btnHldr.ClientSizeChanged += (sender, e) =>
+                            {
+                                //pstdTime.Location = new Point(0, icn.Bottom);
+                                //pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                            };
+
+                            pstdTime.MouseHover += (sender, e) =>
+                            {
+                                ToolTip hnt = new ToolTip();
+                                hnt.SetToolTip(pstdTime, "Time, that elapsed from the Post Time");
+                            };
+
+                            btnHldr.Controls.Add(pstdTime);
+                            LstCntrl = btnHldr;
+                            allwaysShown.Controls.Add(LstCntrl);
+                        }//btnholder
+                        shwSummary = new Label() { Dock = DockStyle.Bottom, TextAlign = ContentAlignment.MiddleCenter, Width = smtimsShown.Width, Height = smtimsShown.Height / 3, Location = new Point(0, 0), Text = NCrr.Text, BackColor = ClrdBck, ForeColor = ClrdFrnt, Font = ContentFont };
+                        NCrr.TextChanged += (sender, e) =>
+                        {
+                            shwSummary.Text = NCrr.Text;
+                        };
+                        LstCntrl = shwSummary;
+                        allwaysShown.Controls.Add(LstCntrl);
+
+                        LstCntrl = allwaysShown;
+                        Hrzntl.Controls.Add(LstCntrl);
+                    }//AlwaysShownDSGN
+                   
+                    {//HrzBottom
+                        Hrzntl.Controls.Add(Sttus);
+                        Height += Sttus.Height;
+                        Sttus.FFWD.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition = 0;
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                        }; // ffwd click
+                        Sttus.FWD.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition--;
+                            if (ShwOneCrrncsPosition < 0)
+                            {
+                                ShwOneCrrncsPosition = 0;
+                            }
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                        }; // fwd click
+                        Sttus.BCK.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition++;
+                            if (ShwOneCrrncsPosition > CrrncsRates.Count - 1)
+                            {
+                                ShwOneCrrncsPosition = CrrncsRates.Count - 1;
+                            }
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                        }; // back click
+                        Sttus.REW.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition = CrrncsRates.Count - 1;
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                            //Width += 10;
+                        }; // rewind click
+
+                        Sttus.StrtDate.ClickOnly += (sender, e) =>
+                        {
+                            
+                            {
+                                DateTimePicker dtp = new DateTimePicker() { Dock = DockStyle.Fill, Size = smtimsShown.Size, Location = new Point(0, 0) };
+                                //smtimsShown.Controls.Add(dtp);
+                                Controls.Add(dtp);
+                                dtp.Select();
+                                //dtp.BringToFront();
+                                SendKeys.Send("%{DOWN}");
+                                dtp.ValueChanged += (senderf, f) => //{ };
+                                {
+
+                                    {
+                                        int ryear = dtp.Value.Year;
+                                        int rmonth = dtp.Value.Month;
+                                        int rday = dtp.Value.Day;
+                                        int rhour = 0;
+                                        int rminute = 0;
+                                        int rsecond = 0;
+                                        int rmiliSc = 0;
+                                        SrStart_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+                                        if (Ttle.Text == "BGN" && SrStart_date >= new DateTime(2004, 5, 18, 00, 00, 00))
+                                        {
+                                            //18.5.2004
+
+                                            RstSrStD();
+                                            LblSrSDate.Text = "Requested data are not available";
+                                            //LblSrEDate.Text = "Requested data are not available";
+                                            LblSrSDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (SrStart_date > DateTime.Now.AddDays(-1))
+                                            {
+                                                ryear = DateTime.Now.Year;
+                                                rmonth = DateTime.Now.Month;
+                                                rday = DateTime.Now.AddDays(-1).Day;
+                                                //LblSrSDate.Text = "Please select date, that is in the past.";
+                                                RstSrStD();
+                                                SrStart_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+
+                                                //LblSrSDate.ForeColor = Color.SkyBlue;
+                                                SniffIt();
+                                            }
+                                        }
+                                        if (SrStart_date == SrEnd_date)
+                                        {
+                                            LblSrSDate.Text = "Please select different start date then: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString() + " is the same date as end day of interval";
+                                            RstSrStD();
+                                            LblSrSDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        if (SrStart_date < SrEnd_date)
+                                        {
+                                            LblSrSDate.Text = "Selected start date: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString();
+
+                                            SniffIt();
+                                            LblSrSDate.ForeColor = ClrdBck;
+                                        }
+                                        if (SrStart_date > SrEnd_date)
+                                        {
+                                            if (SrEnd_date!= new DateTime(1, 1, 0001, 00, 00, 00))
+                                            {
+                                                LblSrSDate.Text = "Please reselect. Start date is later date then the end date";
+                                                RstSrStD();
+                                                LblSrSDate.ForeColor = Color.SkyBlue;
+                                                return;
+                                            }
+                                            if (SrEnd_date == new DateTime(1, 1, 0001, 00, 00, 00))
+                                            {
+                                                LblSrSDate.Text = "Selected start date: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString();
+
+                                                SniffIt();
+                                                LblSrSDate.ForeColor = ClrdBck;
+                                            }
+                                        }
+                                        
+                                        
+                                    }
+
+                                };
+                                //ShowOneCrrncy(CrrncsRates);
+                            }
+                            
+                        }; // StrtDate click
+                        Sttus.EndDate.ClickOnly += (sender, e) =>
+                        {
+                            {
+                                DateTimePicker dtp = new DateTimePicker() { Dock = DockStyle.Fill, Size = smtimsShown.Size, Location = new Point(0, 0) };
+                                //smtimsShown.Controls.Add(dtp);
+                                Controls.Add(dtp);
+                                dtp.Select();
+                                //dtp.BringToFront();
+                                SendKeys.Send("%{DOWN}");
+                                dtp.ValueChanged += (senderf, f) => //{ };
+                                {
+                                    {
+                                        int ryear = dtp.Value.Year;
+                                        int rmonth = dtp.Value.Month;
+                                        int rday = dtp.Value.Day;
+                                        int rhour = 0;
+                                        int rminute = 0;
+                                        int rsecond = 0;
+                                        int rmiliSc = 0;
+                                        SrEnd_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+                                        if (Ttle.Text == "BGN" && SrEnd_date >= new DateTime(2004, 5, 18, 00, 00, 00))
+                                        {
+                                            //18.5.2004
+
+                                            RstSrEnD();
+                                            LblSrEDate.Text = "Requested data are not available";
+                                            //LblSrEDate.Text = "Requested data are not available";
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (SrEnd_date>DateTime.Now)
+                                            {
+                                                RstSrEnD();
+                                                SrEnd_date = DateTime.Now;
+                                                LblSrEDate.Text = "Selected date is:" + SrEnd_date.ToString("MM/dd/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                                //LblSrEDate.Text = "Requested data are not available";
+                                                //LblSrEDate.Text = "Requested data are not available";
+                                                LblSrEDate.ForeColor = ClrdBck;
+                                                SniffIt();
+                                            }
+                                        }
+                                        if (SrEnd_date == SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Please select different start date then: " + SrEnd_date.ToString("dd/MM/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                            RstSrEnD();
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        if (SrEnd_date < SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Selected end day comes sooner then start date.";
+                                            RstSrEnD();
+                                            //
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                        }
+                                        if (SrEnd_date > SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Selected date is:"+ SrEnd_date.ToString("MM/dd/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                            SniffIt();
+                                            LblSrEDate.ForeColor = ClrdBck;
+                                            //return;
+                                        }
+
+
+                                    }
+
+                                };
+                                //ShowOneCrrncy(CrrncsRates);
+                            }
+                            
+                        }; // EndDate click
+                        Sttus.EUR.ClickOnly += (sender, e) =>
+                        {
+                            Phase++;
+                        }; // EUR click
+                        //Sttus.Items.Add(LnguageContextMenuStrip);
+                    }//HrzBottom
+
+                    
+                    ClientSizeChanged += (sender, e) =>
+                    {
+                        if (Width > MSzz.Width && ShwNws == false)
+                        {
+                            {//btnholder
+                                btnHldr.Height = allwaysShown.Height / 2;
+                                btnHldr.Width = allwaysShown.Width / 3;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.BackColor = ClrdBck;
+                                btnHldr.Dock = DockStyle.Left;
+                                //
+                                icn.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                icn.Invalidate();
+
+                                //
+
+                                pstdTime.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                pstdTime.Location = new Point(icn.Right, 0); pstdTime.Anchor = AnchorStyles.Top;
+                                pstdTime.Invalidate();
+                                btnHldr.Invalidate();
+                            }//btnholder
+                        }
+                        if (Height > MSzz.Height && ShwNws == false)
+                        {
+                            {//btnHldr
+                                btnHldr.Height = allwaysShown.Height;
+                                btnHldr.Width = allwaysShown.Width / DsgnModifierWdth;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.Dock = DockStyle.Left;
+
+                                icn.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                btnHldr.ClientSizeChanged += (sendef, f) =>
+                                {
+                                    icn.Width = btnHldr.Width;
+                                    icn.Height = btnHldr.Height / 2;
+                                    icn.Location = new Point(0, 0);
+                                };
+
+                                pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                pstdTime.Location = new Point(0, icn.Bottom);
+                                pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                                btnHldr.ClientSizeChanged += (senderr, r) =>
+                                {
+                                    pstdTime.Location = new Point(0, icn.Bottom);
+                                    pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                                };
+                            }//btnHldr
+
+                        }
+
+                        if (Width > MSzz.Width && ShwNws == true)
+                        {
+                            {//btnholder
+                                btnHldr.Height = allwaysShown.Height / 2;
+                                btnHldr.Width = allwaysShown.Width / 3;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.BackColor = ClrdBck;
+                                btnHldr.Dock = DockStyle.Left;
+
+                                //
+
+                                icn.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                icn.Invalidate();
+
+                                //
+
+                                pstdTime.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                pstdTime.Location = new Point(icn.Right, 0);
+                                pstdTime.Anchor = AnchorStyles.Top;
+                                pstdTime.Invalidate();
+                                btnHldr.Invalidate();
+                            }//btnholder
+                        }
+                        else
+                        {
+                            {//btnHldr
+                                btnHldr.Height = allwaysShown.Height;
+                                btnHldr.Width = allwaysShown.Width / DsgnModifierWdth;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.Dock = DockStyle.Left;
+
+                                icn.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                btnHldr.ClientSizeChanged += (sendef, f) =>
+                                {
+                                    icn.Width = btnHldr.Width;
+                                    icn.Height = btnHldr.Height / 2;
+                                    icn.Location = new Point(0, 0);
+                                };
+
+                                pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                pstdTime.Location = new Point(0, icn.Bottom);
+                                pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                                btnHldr.ClientSizeChanged += (senderr, r) =>
+                                {
+                                    pstdTime.Location = new Point(0, icn.Bottom);
+                                    pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                                };
+                            }//btnHldr
+                        }
+                        if (Height > MSzz.Height * 3 && ShwNws == true)
+                        {
+                            {//btnHldr
+                                btnHldr.Height = allwaysShown.Height;
+                                btnHldr.Width = allwaysShown.Width / DsgnModifierWdth;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.Dock = DockStyle.Left;
+
+                                icn.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                btnHldr.ClientSizeChanged += (sendef, f) =>
+                                {
+                                    icn.Width = btnHldr.Width;
+                                    icn.Height = btnHldr.Height / 2;
+                                    icn.Location = new Point(0, 0);
+                                };
+
+                                pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                pstdTime.Location = new Point(0, icn.Bottom);
+                                pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                                btnHldr.ClientSizeChanged += (senderr, r) =>
+                                {
+                                    pstdTime.Location = new Point(0, icn.Bottom);
+                                    pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                                };
+                            }//btnHldr
+
+                        }
+                        else
+                        {
+                            {//btnholder
+                                btnHldr.Height = allwaysShown.Height / 2;
+                                btnHldr.Width = allwaysShown.Width / 3;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.BackColor = ClrdBck;
+                                btnHldr.Dock = DockStyle.Left;
+
+                                //
+
+                                icn.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                icn.Invalidate();
+
+                                //
+
+                                pstdTime.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                pstdTime.Location = new Point(icn.Right, 0);
+                                pstdTime.Anchor = AnchorStyles.Top;
+                                pstdTime.Invalidate();
+                                btnHldr.Invalidate();
+                            }//btnholder
+                        }
+                        DrawGraph();
+                        Invalidate();
+                        foreach (Control item in Controls)
+                        {
+                            item.Invalidate();
+                        }
+
+                    };
+                    
+                }//DSG
+                
+                Prgrm.Controls.Add(Hrzntl);
+                {//LngButtonDsg
+                    {
+                        Button lng = new Button() { Dock = DockStyle.Top, Height = 22,Width=Hrzntl.Width,Location=new Point(0,0),BackColor=ClrdBck,ForeColor=ClrdFrnt,Text="Language",TextAlign=ContentAlignment.MiddleCenter };
+                        lng.Click += (sender, e) => 
+                        {
+                            Form nwFrm = new Form() { Location=MousePosition,Size=Prgrm.Size,BackColor=ClrdBck,ForeColor=ClrdFrnt};
+                            nwFrm.Click += (senderf, f) =>
+                            {
+                                nwFrm.Close();
+                            };
+                            nwFrm.BringToFront();
+                            nwFrm.Show();
+                            Button cz = new Button() {Size=new Size(Prgrm.Height,Prgrm.Width), Dock = DockStyle.Right, Text = "Čeština" };
+                            nwFrm.Controls.Add(cz);
+                            Button eng = new Button() { Size = new Size(Prgrm.Height, Prgrm.Width ), Dock = DockStyle.Right, Text = "English" };
+                            nwFrm.Controls.Add(eng);
+                            
+                        };
+                        Prgrm.Controls.Add(lng);
+                        Height += lng.Height;
+                    }
+                }//LngButtonDsg
+                MSzz = new Size(Width, (Height));// + S.F.STATUS.Height);
+                foreach (Control c in Hrzntl.Controls)
+                {
+
+                    c.KeyDown += (sender, e) =>
+                    {
+                        switch (e.KeyCode)
+                        {
+                            case Keys.PageUp:
+                                FontSize = FontSize + 2;
+                                break;
+                            case Keys.PageDown:
+                                FontSize = FontSize - 2;
+                                break;
+                            default:
+                                break;
+                        }
+                    };
+                    if (c.Controls.Count > 0)
+                    {
+                        foreach (Control cc in c.Controls)
+                        {
+                            cc.KeyDown += (sender, e) =>
+                            {
+                                switch (e.KeyCode)
+                                {
+                                    case Keys.PageUp:
+                                        FontSize = FontSize + 2;
+                                        break;
+                                    case Keys.PageDown:
+                                        FontSize = FontSize - 2;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            };
+                            if (c.Controls.Count > 0)
+                            {
+                                foreach (Control ccc in cc.Controls)
+                                {
+                                    ccc.KeyDown += (sender, e) =>
+                                    {
+                                        switch (e.KeyCode)
+                                        {
+                                            case Keys.PageUp:
+                                                FontSize = FontSize + 2;
+                                                break;
+                                            case Keys.PageDown:
+                                                FontSize = FontSize - 2;
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }//Horizontal Panel -Hrzntl
+
+
+
+            ClientSizeChanged += (sender, e) =>
+            {
+                Prgrm.Invalidate();
+            };
+
+        }//FUNCTION - private----
+
+        //FUNCTION PUBLIC----------------------------------------------    
+        private void RstUserDates()
+        {
+            SrStart_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            LblSrSDate.Text = "";
+            LblSrEDate.Text = "";
+        }
+        private void RstSrEnD()
+        {
+            SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            //SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            //LblSrSDate.Text = "";
+            LblSrEDate.Text = "";
+        }
+        private void RstSrStD()
+        {
+            SrStart_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            //SrEnd_date = new DateTime(1, 1, 0001, 00, 00, 00);
+            LblSrSDate.Text = "";
+            //LblSrEDate.Text = "";
+        }
+        public void MyClrInvrt(Color cl)
+        {
+            ClrInver = Color.FromArgb(cl.ToArgb() ^ 0xffffff);
+            ForeColor = ClrInver;
+        }
+        public void DbgTltps()
+        {//Position of added controls
+
+            {//Draw over Time
+                {//Create new Draw over Time for later execution
+                 //MTltip.DrwOverTime drwot = new MTltip.DrwOverTime(50);
+
+                    //PrsmSlct.ReceiveMove(prsmSlctUsrVal, 43);
+                }//Create new Draw over Time for later execution
+                {//asign whoo will be drawed
+                }//asign whoo will be drawed
+                {//Execute && DRAW Move3d
+                    Cnst.S.Ticker.Interval = 33;
+
+                    Cnst.S.Ticker.Tick += (senderf, f) =>
+                    {
+                        //foreach (MTltip q in Cnst.S.TPaint)
+                        //{
+                        //    q.Ticker_Tick2();
+                        //    //q.Ticker_Tick();
+
+                        //}
+                        //Cnst.S.TPaint.RemoveAll(q => q.isDrwing == false);
+                        //if (Cnst.S.TPaint.Count == 0) Cnst.S.Ticker.Stop();
+
+                        ////S.Cnvs.Refresh();
+
+                    };
+                }//Execute && DRAW Move3d
+            }
+
+
+
+            Invalidate();
+            //MessageBox.Show(Cnst.Source.ClientRectangle.Size.ToString());
+
+            foreach (Control c in Controls)
+            {
+
+                c.ForeColor = Color.FromArgb(32, 78, 70);
+                c.Invalidate();
+                {
+                }
+                if (c.Controls.Count > 0)
+                {
+                    foreach (Control Cc in Controls)
+                    {
+                        Cc.ForeColor = Color.FromArgb(32, 78, 70);
+                        Cc.Invalidate();
+                        if (Cc.Controls.Count > 0)
+                        {
+                            foreach (Control Ccc in Controls)
+                            {
+                                Ccc.ForeColor = Color.FromArgb(32, 78, 70);
+                                Ccc.Invalidate();
+                            }
+                        }
+                    }
+
+                }
+            }
+            //Controls.Clear();
+            //HdrDsgn();
+        }
+        public void RposCntrols()
+        {//Position of added controls
+            Invalidate();
             
+            foreach (Control c in Controls)
+            {
+                //c.ForeColor = Color.FromArgb(32, 78, 70);
+                c.Invalidate();
+                if (c.Controls.Count > 0)
+                {
+                    foreach (Control Cc in Controls)
+                    {
+                        //Cc.ForeColor = Color.FromArgb(32, 78, 70);
+                        Cc.Invalidate();
+                        if (Cc.Controls.Count > 0)
+                        {
+                            foreach (Control Ccc in Controls)
+                            {
+                                //Ccc.ForeColor = Color.FromArgb(32, 78, 70);
+                                Ccc.Invalidate();
+                            }
+                        }
+                    }
+
+                }
+            }
+            
+        }
+        public void PrintScreen()
+        {
+            //!!SAVE PICTURE FILE ON DISC!!---------------------------------
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
+            this.DrawToBitmap(bmp, new Rectangle(Point.Empty, bmp.Size));
+            string myPath = Application.StartupPath;//Setting HomeFolder for saving future PrtScr.jpg
+            myPath += "\\SpliterScreen.jpg"; //Adding Name for PrtScr.jpg
+            try
+            {
+                bmp.Save(myPath, ImageFormat.Jpeg);//SAVE!!
+            }
+            catch (Exception) { }
+            //!!SAVE PICTURE FILE ON DISC!!---------------------------------
+        }
+
+    }
+
+    //Classes
+
+    internal class RssNews
+    {
+        public string Title { get; set; }
+        public string Link { get; set; }
+        public string Summary { get; set; }
+        public string Content { get; set; }
+        public string Date { get; set; }
+        public string Id { get; set; }
+        public List<string> ImageSource { get; set; }
+
+        public RssNews(string title, string summary, string content, string link, string date, string id, List<string> imageSource)
+        {
+            Title = title;
+            Summary = summary;
+            Content = content;
+            Link = link;
+            Date = date;
+            Id = id;
+            ImageSource = imageSource;
+        }
+    }
+
+    //context menu for Textures
+
+    //context menu for Panels
+
+
+
+
+}
+                                                                                                                                                                                                                                                                                {//asign whoo will be drawed
+                }//asign whoo will be drawed
+                {//Execute && DRAW Move3d
+                    Cnst.S.Ticker.Interval = 33;
+
+                    Cnst.S.Ticker.Tick += (senderf, f) =>
+                    {
+                        //foreach (MTltip q in Cnst.S.TPaint)
+                        //{
+                        //    q.Ticker_Tick2();
+                        //    //q.Ticker_Tick();
+
+                        //}
+                        //Cnst.S.TPaint.RemoveAll(q => q.isDrwing == false);
+                        //if (Cnst.S.TPaint.Count == 0) Cnst.S.Ticker.Stop();
+
+                        ////S.Cnvs.Refresh();
+
+                    };
+                }//Execute && DRAW Move3d
+            }
+
+
+
+            Invalidate();
+            //MessageBox.Show(Cnst.Source.ClientRectangle.Size.ToString());
+
+            foreach (Control c in Controls)
+            {
+
+                c.ForeColor = Color.FromArgb(32, 78, 70);
+                c.Invalidate();
+                {
+                }
+                if (c.Controls.Count > 0)
+                {
+                    foreach (Control Cc in Controls)
+                    {
+                        Cc.ForeColor = Color.FromArgb(32, 78, 70);
+                        Cc.Invalidate();
+                        if (Cc.Controls.Count > 0)
+                        {
+                            foreach (Control Ccc in Controls)
+                            {
+                                Ccc.ForeColor = Color.FromArgb(32, 78, 70);
+                                Ccc.Invalidate();
+                            }
+                        }
+                    }
+
+                }
+            }
+            //Controls.Clear();
+            //HdrDsgn();
+        }
+        public void RposCntrols()
+        {//Position of added controls
+            Invalidate();
+            
+            foreach (Control c in Controls)
+            {
+                //c.ForeColor = Color.FromArgb(32, 78, 70);
+                c.Invalidate();
+                if (c.Controls.Count > 0)
+                {
+                    foreach (Control Cc in Controls)
+                    {
+                        //Cc.ForeColor = Color.FromArgb(32, 78, 70);
+                        Cc.Invalidate();
+                        if (Cc.Controls.Count > 0)
+                        {
+                            foreach (Control Ccc in Controls)
+                            {
+                                //Ccc.ForeColor = Color.FromArgb(32, 78, 70);
+                                Ccc.Invalidate();
+                            }
+                        }
+                    }
+
+                }
+            }
+            
+        }
+        public void PrintScreen()
+        {
+            //!!SAVE PICTURE FILE ON DISC!!---------------------------------
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
+            this.DrawToBitmap(bmp, new Rectangle(Point.Empty, bmp.Size));
+            string myPath = Application.StartupPath;//Setting HomeFolder for saving future PrtScr.jpg
+            myPath += "\\SpliterScreen.jpg"; //Adding Name for PrtScr.jpg
+            try
+            {
+                bmp.Save(myPath, ImageFormat.Jpeg);//SAVE!!
+            }
+            catch (Exception) { }
+            //!!SAVE PICTURE FILE ON DISC!!---------------------------------
+        }
+
+    }
+
+    //Classes
+
+    internal class RssNews
+    {
+        public string Title { get; set; }
+        public string Link { get; set; }
+        public string Summary { get; set; }
+        public string Content { get; set; }
+        public string Date { get; set; }
+        public string Id { get; set; }
+        public List<string> ImageSource { get; set; }
+
+        public RssNews(string title, string summary, string content, string link, string date, string id, List<string> imageSource)
+        {
+            Title = title;
+            Summary = summary;
+            Content = content;
+            Link = link;
+            Date = date;
+            Id = id;
+            ImageSource = imageSource;
+        }
+    }
+
+    //context menu for Textures
+
+    //context menu for Panels
+
+
+
+
+}
+                                                                                                                                                                                                                                                                                                                                                l be drawed
+                }//asign whoo will be drawed
+                {//Execute && DRAW Move3d
+                    Cnst.S.Ticker.Interval = 33;
+
+                    Cnst.S.Ticker.Tick += (senderf, f) =>
+                    {
+                        //foreach (MTltip q in Cnst.S.TPaint)
+                        //{
+                        //    q.Ticker_Tick2();
+                        //    //q.Ticker_Tick();
+
+                        //}
+                        //Cnst.S.TPaint.RemoveAll(q => q.isDrwing == false);
+                        //if (Cnst.S.TPaint.Count == 0) Cnst.S.Ticker.Stop();
+
+                        ////S.Cnvs.Refresh();
+
+                    };
+                }//Execute && DRAW Move3d
+            }
+
+
+
+            Invalidate();
+            //MessageBox.Show(Cnst.Source.ClientRectangle.Size.ToString());
+
+            foreach (Control c in Controls)
+            {
+
+                c.ForeColor = Color.FromArgb(32, 78, 70);
+                c.Invalidate();
+                {
+                }
+                if (c.Controls.Count > 0)
+                {
+                    foreach (Control Cc in Controls)
+                    {
+                        Cc.ForeColor = Color.FromArgb(32, 78, 70);
+                        Cc.Invalidate();
+                        if (Cc.Controls.Count > 0)
+                        {
+                            foreach (Control Ccc in Controls)
+                            {
+                                Ccc.ForeColor = Color.FromArgb(32, 78, 70);
+                                Ccc.Invalidate();
+                            }
+                        }
+                    }
+
+                }
+            }
+            //Controls.Clear();
+            //HdrDsgn();
+        }
+        public void RposCntrols()
+        {//Position of added controls
+            Invalidate();
+            
+            foreach (Control c in Controls)
+            {
+                //c.ForeColor = Color.FromArgb(32, 78, 70);
+                c.Invalidate();
+                if (c.Controls.Count > 0)
+                {
+                    foreach (Control Cc in Controls)
+                    {
+                        //Cc.ForeColor = Color.FromArgb(32, 78, 70);
+                        Cc.Invalidate();
+                        if (Cc.Controls.Count > 0)
+                        {
+                            foreach (Control Ccc in Controls)
+                            {
+                                //Ccc.ForeColor = Color.FromArgb(32, 78, 70);
+                                Ccc.Invalidate();
+                            }
+                        }
+                    }
+
+                }
+            }
+            
+        }
+        public void PrintScreen()
+        {
+            //!!SAVE PICTURE FILE ON DISC!!---------------------------------
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
+            this.DrawToBitmap(bmp, new Rectangle(Point.Empty, bmp.Size));
+            string myPath = Application.StartupPath;//Setting HomeFolder for saving future PrtScr.jpg
+            myPath += "\\SpliterScreen.jpg"; //Adding Name for PrtScr.jpg
+            try
+            {
+                bmp.Save(myPath, ImageFormat.Jpeg);//SAVE!!
+            }
+            catch (Exception) { }
+            //!!SAVE PICTURE FILE ON DISC!!---------------------------------
+        }
+
+    }
+
+    //Classes
+
+    internal class RssNews
+    {
+        public string Title { get; set; }
+        public string Link { get; set; }
+        public string Summary { get; set; }
+        public string Content { get; set; }
+        public string Date { get; set; }
+        public string Id { get; set; }
+        public List<string> ImageSource { get; set; }
+
+        public RssNews(string title, string summary, string content, string link, string date, string id, List<string> imageSource)
+        {
+            Title = title;
+            Summary = summary;
+            Content = content;
+            Link = link;
+            Date = date;
+            Id = id;
+            ImageSource = imageSource;
+        }
+    }
+
+    //context menu for Textures
+
+    //context menu for Panels
+
+
+
+
+}
+                                                                                                                                                                                                                                                                                                                                                                      }
+                            else
+                            {
+                                mnts = DateTime.Now.Minute.ToString();
+                            }
+                            string scnds = "";
+
+                            if (DateTime.Now.Second < 10)
+                            {
+                                scnds = "0" + (DateTime.Now.Second.ToString());
+                                //MessageBox.Show(scnds);
+                            }
+                            else
+                            {
+                                scnds = DateTime.Now.Second.ToString();
+                            }
+                            pstdTime.Text = DateTime.Now.Hour.ToString() + ":" + mnts + ":" + scnds;
+                            pstdTime.TextChanged += (sender, e) =>
+                            {
+                                Invalidate();
+                                //ttle.Text = Ttle.Text;
+                            };
+                            pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                            pstdTime.Location = new Point(0, icn.Bottom);
+                            pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                            btnHldr.ClientSizeChanged += (sender, e) =>
+                            {
+                                //pstdTime.Location = new Point(0, icn.Bottom);
+                                //pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                            };
+
+                            pstdTime.MouseHover += (sender, e) =>
+                            {
+                                ToolTip hnt = new ToolTip();
+                                hnt.SetToolTip(pstdTime, "Time, that elapsed from the Post Time");
+                            };
+
+                            btnHldr.Controls.Add(pstdTime);
+                            LstCntrl = btnHldr;
+                            allwaysShown.Controls.Add(LstCntrl);
+                        }//btnholder
+                        shwSummary = new Label() { Dock = DockStyle.Bottom, TextAlign = ContentAlignment.MiddleCenter, Width = smtimsShown.Width, Height = smtimsShown.Height / 3, Location = new Point(0, 0), Text = NCrr.Text, BackColor = ClrdBck, ForeColor = ClrdFrnt, Font = ContentFont };
+                        NCrr.TextChanged += (sender, e) =>
+                        {
+                            shwSummary.Text = NCrr.Text;
+                        };
+                        LstCntrl = shwSummary;
+                        allwaysShown.Controls.Add(LstCntrl);
+
+                        LstCntrl = allwaysShown;
+                        Hrzntl.Controls.Add(LstCntrl);
+                    }//AlwaysShownDSGN
+                   
+                    {//HrzBottom
+                        Hrzntl.Controls.Add(Sttus);
+                        Height += Sttus.Height;
+                        Sttus.FFWD.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition = 0;
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                        }; // ffwd click
+                        Sttus.FWD.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition--;
+                            if (ShwOneCrrncsPosition < 0)
+                            {
+                                ShwOneCrrncsPosition = 0;
+                            }
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                        }; // fwd click
+                        Sttus.BCK.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition++;
+                            if (ShwOneCrrncsPosition > CrrncsRates.Count - 1)
+                            {
+                                ShwOneCrrncsPosition = CrrncsRates.Count - 1;
+                            }
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                        }; // back click
+                        Sttus.REW.ClickOnly += (sender, e) =>
+                        {
+                            ShwOneCrrncsPosition = CrrncsRates.Count - 1;
+                            RstUserDates();
+                            ShowOneCrrncy(CrrncsRates);
+                            //Width += 10;
+                        }; // rewind click
+
+                        Sttus.StrtDate.ClickOnly += (sender, e) =>
+                        {
+                            
+                            {
+                                DateTimePicker dtp = new DateTimePicker() { Dock = DockStyle.Fill, Size = smtimsShown.Size, Location = new Point(0, 0) };
+                                //smtimsShown.Controls.Add(dtp);
+                                Controls.Add(dtp);
+                                dtp.Select();
+                                //dtp.BringToFront();
+                                SendKeys.Send("%{DOWN}");
+                                dtp.ValueChanged += (senderf, f) => //{ };
+                                {
+
+                                    {
+                                        int ryear = dtp.Value.Year;
+                                        int rmonth = dtp.Value.Month;
+                                        int rday = dtp.Value.Day;
+                                        int rhour = 0;
+                                        int rminute = 0;
+                                        int rsecond = 0;
+                                        int rmiliSc = 0;
+                                        SrStart_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+                                        if (Ttle.Text == "BGN" && SrStart_date >= new DateTime(2004, 5, 18, 00, 00, 00))
+                                        {
+                                            //18.5.2004
+
+                                            RstSrStD();
+                                            LblSrSDate.Text = "Requested data are not available";
+                                            //LblSrEDate.Text = "Requested data are not available";
+                                            LblSrSDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (SrStart_date > DateTime.Now.AddDays(-1))
+                                            {
+                                                ryear = DateTime.Now.Year;
+                                                rmonth = DateTime.Now.Month;
+                                                rday = DateTime.Now.AddDays(-1).Day;
+                                                //LblSrSDate.Text = "Please select date, that is in the past.";
+                                                RstSrStD();
+                                                SrStart_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+
+                                                //LblSrSDate.ForeColor = Color.SkyBlue;
+                                                SniffIt();
+                                            }
+                                        }
+                                        if (SrStart_date == SrEnd_date)
+                                        {
+                                            LblSrSDate.Text = "Please select different start date then: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString() + " is the same date as end day of interval";
+                                            RstSrStD();
+                                            LblSrSDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        if (SrStart_date < SrEnd_date)
+                                        {
+                                            LblSrSDate.Text = "Selected start date: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString();
+
+                                            SniffIt();
+                                            LblSrSDate.ForeColor = ClrdBck;
+                                        }
+                                        if (SrStart_date > SrEnd_date)
+                                        {
+                                            if (SrEnd_date!= new DateTime(1, 1, 0001, 00, 00, 00))
+                                            {
+                                                LblSrSDate.Text = "Please reselect. Start date is later date then the end date";
+                                                RstSrStD();
+                                                LblSrSDate.ForeColor = Color.SkyBlue;
+                                                return;
+                                            }
+                                            if (SrEnd_date == new DateTime(1, 1, 0001, 00, 00, 00))
+                                            {
+                                                LblSrSDate.Text = "Selected start date: " + SrStart_date.ToString("dd/MM/yyyy") + " " + SrStart_date.DayOfWeek.ToString();
+
+                                                SniffIt();
+                                                LblSrSDate.ForeColor = ClrdBck;
+                                            }
+                                        }
+                                        
+                                        
+                                    }
+
+                                };
+                                //ShowOneCrrncy(CrrncsRates);
+                            }
+                            
+                        }; // StrtDate click
+                        Sttus.EndDate.ClickOnly += (sender, e) =>
+                        {
+                            {
+                                DateTimePicker dtp = new DateTimePicker() { Dock = DockStyle.Fill, Size = smtimsShown.Size, Location = new Point(0, 0) };
+                                //smtimsShown.Controls.Add(dtp);
+                                Controls.Add(dtp);
+                                dtp.Select();
+                                //dtp.BringToFront();
+                                SendKeys.Send("%{DOWN}");
+                                dtp.ValueChanged += (senderf, f) => //{ };
+                                {
+                                    {
+                                        int ryear = dtp.Value.Year;
+                                        int rmonth = dtp.Value.Month;
+                                        int rday = dtp.Value.Day;
+                                        int rhour = 0;
+                                        int rminute = 0;
+                                        int rsecond = 0;
+                                        int rmiliSc = 0;
+                                        SrEnd_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
+                                        if (Ttle.Text == "BGN" && SrEnd_date >= new DateTime(2004, 5, 18, 00, 00, 00))
+                                        {
+                                            //18.5.2004
+
+                                            RstSrEnD();
+                                            LblSrEDate.Text = "Requested data are not available";
+                                            //LblSrEDate.Text = "Requested data are not available";
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (SrEnd_date>DateTime.Now)
+                                            {
+                                                RstSrEnD();
+                                                SrEnd_date = DateTime.Now;
+                                                LblSrEDate.Text = "Selected date is:" + SrEnd_date.ToString("MM/dd/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                                //LblSrEDate.Text = "Requested data are not available";
+                                                //LblSrEDate.Text = "Requested data are not available";
+                                                LblSrEDate.ForeColor = ClrdBck;
+                                                SniffIt();
+                                            }
+                                        }
+                                        if (SrEnd_date == SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Please select different start date then: " + SrEnd_date.ToString("dd/MM/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                            RstSrEnD();
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                            return;
+                                        }
+                                        if (SrEnd_date < SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Selected end day comes sooner then start date.";
+                                            RstSrEnD();
+                                            //
+                                            LblSrEDate.ForeColor = Color.SkyBlue;
+                                        }
+                                        if (SrEnd_date > SrStart_date)
+                                        {
+                                            LblSrEDate.Text = "Selected date is:"+ SrEnd_date.ToString("MM/dd/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
+                                            SniffIt();
+                                            LblSrEDate.ForeColor = ClrdBck;
+                                            //return;
+                                        }
+
+
+                                    }
+
+                                };
+                                //ShowOneCrrncy(CrrncsRates);
+                            }
+                            
+                        }; // EndDate click
+                        Sttus.EUR.ClickOnly += (sender, e) =>
+                        {
+                            {
+                                nvrtd.Clear();
+                                decimal cnstLcl= new decimal();
+                                cnstLcl = 1/4+2;
+                                if (prcDateTemporary.Count>1)
+                                {
+                                    foreach (var prcData in prcDateTemporary)
+                                    {
+                                        nvrtd.Add(new PriceData(prcData.Date, 1/ prcData.Price));
+                                    }
+                                    if (nvrtd.Count > 1)
+                                    {
+                                        //PriceList.Clear();
+                                        PriceList = nvrtd;
+                                        DrawGraph();
+                                        txtStartDate.Text = nvrtd[0].Date.ToString() + Environment.NewLine + nvrtd[0].Price.ToString();
+                                        txtEndDate.Text = nvrtd[nvrtd.Count - 1].Date.ToString() + Environment.NewLine + nvrtd[nvrtd.Count - 1].Price.ToString();
+                                        //ShowOneCrrncy(CrrncsRates);
+                                    }
+                                }
+                                else
+                                {
+                                    if (CrrncyHstry.Count>1)
+                                    {
+                                        foreach (KeyValuePair<DateTime, decimal> kvp in CrrncyHstry)
+                                        {
+                                            nvrtd.Add(new PriceData(kvp.Key, cnstLcl - kvp.Value));
+                                        }
+                                        if (nvrtd.Count > 1)
+                                        {
+                                            PriceList = nvrtd;
+                                            DrawGraph();
+                                            txtStartDate.Text = nvrtd[0].Date.ToString() + Environment.NewLine + nvrtd[0].Price.ToString();
+                                            txtEndDate.Text = nvrtd[nvrtd.Count - 1].Date.ToString() + Environment.NewLine + nvrtd[nvrtd.Count - 1].Price.ToString();
+                                            Ttle.Text = "EUR - € vs " + Ttle.Text;
+                                        }
+                                    }
+                                }
+                            }
+
+                        }; // pks click
+                    }//HrzBottom
+
+                    
+                    ClientSizeChanged += (sender, e) =>
+                    {
+                        if (Width > MSzz.Width && ShwNws == false)
+                        {
+                            {//btnholder
+                                btnHldr.Height = allwaysShown.Height / 2;
+                                btnHldr.Width = allwaysShown.Width / 3;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.BackColor = ClrdBck;
+                                btnHldr.Dock = DockStyle.Left;
+                                //
+                                icn.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                icn.Invalidate();
+
+                                //
+
+                                pstdTime.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                pstdTime.Location = new Point(icn.Right, 0); pstdTime.Anchor = AnchorStyles.Top;
+                                pstdTime.Invalidate();
+                                btnHldr.Invalidate();
+                            }//btnholder
+                        }
+                        if (Height > MSzz.Height && ShwNws == false)
+                        {
+                            {//btnHldr
+                                btnHldr.Height = allwaysShown.Height;
+                                btnHldr.Width = allwaysShown.Width / DsgnModifierWdth;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.Dock = DockStyle.Left;
+
+                                icn.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                btnHldr.ClientSizeChanged += (sendef, f) =>
+                                {
+                                    icn.Width = btnHldr.Width;
+                                    icn.Height = btnHldr.Height / 2;
+                                    icn.Location = new Point(0, 0);
+                                };
+
+                                pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                pstdTime.Location = new Point(0, icn.Bottom);
+                                pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                                btnHldr.ClientSizeChanged += (senderr, r) =>
+                                {
+                                    pstdTime.Location = new Point(0, icn.Bottom);
+                                    pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                                };
+                            }//btnHldr
+
+                        }
+
+                        if (Width > MSzz.Width && ShwNws == true)
+                        {
+                            {//btnholder
+                                btnHldr.Height = allwaysShown.Height / 2;
+                                btnHldr.Width = allwaysShown.Width / 3;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.BackColor = ClrdBck;
+                                btnHldr.Dock = DockStyle.Left;
+
+                                //
+
+                                icn.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                icn.Invalidate();
+
+                                //
+
+                                pstdTime.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                pstdTime.Location = new Point(icn.Right, 0);
+                                pstdTime.Anchor = AnchorStyles.Top;
+                                pstdTime.Invalidate();
+                                btnHldr.Invalidate();
+                            }//btnholder
+                        }
+                        else
+                        {
+                            {//btnHldr
+                                btnHldr.Height = allwaysShown.Height;
+                                btnHldr.Width = allwaysShown.Width / DsgnModifierWdth;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.Dock = DockStyle.Left;
+
+                                icn.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                btnHldr.ClientSizeChanged += (sendef, f) =>
+                                {
+                                    icn.Width = btnHldr.Width;
+                                    icn.Height = btnHldr.Height / 2;
+                                    icn.Location = new Point(0, 0);
+                                };
+
+                                pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                pstdTime.Location = new Point(0, icn.Bottom);
+                                pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                                btnHldr.ClientSizeChanged += (senderr, r) =>
+                                {
+                                    pstdTime.Location = new Point(0, icn.Bottom);
+                                    pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                                };
+                            }//btnHldr
+                        }
+                        if (Height > MSzz.Height * 3 && ShwNws == true)
+                        {
+                            {//btnHldr
+                                btnHldr.Height = allwaysShown.Height;
+                                btnHldr.Width = allwaysShown.Width / DsgnModifierWdth;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.Dock = DockStyle.Left;
+
+                                icn.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                btnHldr.ClientSizeChanged += (sendef, f) =>
+                                {
+                                    icn.Width = btnHldr.Width;
+                                    icn.Height = btnHldr.Height / 2;
+                                    icn.Location = new Point(0, 0);
+                                };
+
+                                pstdTime.Size = new Size(btnHldr.Width, btnHldr.Height / 2);
+                                pstdTime.Location = new Point(0, icn.Bottom);
+                                pstdTime.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+                                btnHldr.ClientSizeChanged += (senderr, r) =>
+                                {
+                                    pstdTime.Location = new Point(0, icn.Bottom);
+                                    pstdTime.Width = btnHldr.Width; pstdTime.Height = btnHldr.Height / 2;
+                                };
+                            }//btnHldr
+
+                        }
+                        else
+                        {
+                            {//btnholder
+                                btnHldr.Height = allwaysShown.Height / 2;
+                                btnHldr.Width = allwaysShown.Width / 3;
+                                btnHldr.Location = new Point(0, 0);
+                                btnHldr.BackColor = ClrdBck;
+                                btnHldr.Dock = DockStyle.Left;
+
+                                //
+
+                                icn.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                icn.Location = new Point(0, 0);
+                                icn.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+                                icn.Invalidate();
+
+                                //
+
+                                pstdTime.Size = new Size(btnHldr.Width / 2, btnHldr.Height);
+                                pstdTime.Location = new Point(icn.Right, 0);
+                                pstdTime.Anchor = AnchorStyles.Top;
+                                pstdTime.Invalidate();
+                                btnHldr.Invalidate();
+                            }//btnholder
+                        }
+                        DrawGraph();
+                        Invalidate();
+                        foreach (Control item in Controls)
+                        {
+                            item.Invalidate();
+                        }
+
+                    };
+                    
+                }//DSG
+                
+                Prgrm.Controls.Add(Hrzntl);
+                {//ForePanDsg
+                    //{
+                    //    ForePnl.Location = new Point(0, 0);
+                    //    ForePnl.Size = ClientSize;
+                    //    ForePnl.BackColor = Color.FromArgb(10, Color.Black);
+                    //    ClientSizeChanged += (sender, e) =>
+                    //    {
+                    //        ForePnl.Location = new Point(0, 0);
+                    //        ForePnl.Size = ClientSize;
+                    //    };
+                    //    ForePnl.BringToFront();
+                    //    Prgrm.Controls.Add(ForePnl);
+                    //    // MessageBox.Show(ForePnl.Height.ToString());
+                    //}
+                }//ForePanDsg
+                MSzz = new Size(Width, (Height));// + S.F.STATUS.Height);
+                foreach (Control c in Hrzntl.Controls)
+                {
+
+                    c.KeyDown += (sender, e) =>
+                    {
+        
