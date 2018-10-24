@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.IO;
+using System.Drawing.Drawing2D;
+using System.Xml;
+using System.Xml.Linq;
+using System.ServiceModel.Syndication;
+using System.Net;
+using System.Windows.Forms.DataVisualization.Charting;
+using System.Globalization;
+//using System.Windows.Forms.DataVisualization.Charting;
+using System.Diagnostics;
+namespace ExRaChe
+{
+    public partial class ExchSniff : Form
+    {
+        //Manager
+        public bool ShwNws = false;
+        private static Font TitleFont = new Font("Litograph", 10, FontStyle.Bold);
+        private static Font ContentFont = new Font("Litograph", 10, FontStyle.Regular);
+        private static Font NfoFont = new Font("Litograph", 8, FontStyle.Regular);
+        public float FontSize
+        {
+            get { return TitleFont.SizeInPoints; }
+            set
+            {
+                float input = value;
+                if (input < 10) input = 10;
+                if (input > 40) input = 40;
+                TitleFont = new Font(TitleFont.FontFamily, input, TitleFont.Style);
+                //TitleLabel.Font = TitleFont;
+                ContentFont = new Font(ContentFont.FontFamily, input, ContentFont.Style);
+                NfoFont = new Font(ContentFont.FontFamily, input, ContentFont.Style);
+                Refresh();
+                //ContentLabel.Font = ContentFont;
+            }
+        }
+        private int ShwOneCrrncsPosition=0, LngSetting = 0;
+        private string BttLngXm = "", TtlXm = "", NwCrrTxtXm = "", LblStrtDXm0 = "", LblStrtDXm1 = "", LblStrtDXm2 = "", LblStrtDXm3 = "", HntLstDataRefresh="", HntCrr0 = "", HntCrr1 = "", BttStrtDXm = "", BttEndDXm = "", XmMnth1="", XmMnth3 = "", XmMnth6 = "", XmMnth12 = "", XmMnthAll="";
+        public Color ClrdBck = Color.FromArgb(132, 45, 37);
+        public Color ClrdFrnt = Color.FromArgb(232, 145, 137);
+
+        public Color ClrInver;
+        public Control LstCntrl = new Control();
+        private int DsgnModifierWdth = 2;
+        public int SiModifier = 1;//Manager
+
+        //IntroScr
+        public int TmrCnvertToInt = 0;
+        public int TmrCnvertToIntEnd = 0;
+        public int ClctIntrval = 0;
+        public DateTime TmerStart = new DateTime();
+        public DateTime TmerEnd = new DateTime();
+        public DateTime TmOfClick = new DateTime();
+        List<string> IntroStrngs = new List<string>();
+        private Point mouseDownLoc;
+        public Panel DrwCore = new Panel();//IntroScr
+
+        //Hrzntl Base DSGN object declaration
+        public Point SpwLc = new Point();
+        public Timer Tckr1 = new Timer();
+        public Font MFnt = new Font("Litograph", 15, FontStyle.Bold);
+        public Font mFntCh = new Font("Litograph", 10, FontStyle.Regular);
+        public Rectangle DsgRct = new Rectangle();
+        public Panel VrtLft, HrzLftTop, HrzLftDwn, VrtRght, HrzRghtTop, HrzRghtDwn;
+        public Panel Hrzntl = new Panel();
+        public Panel Prgrm = new Panel();
+        public Color ClrBasePenelHolder = Color.FromArgb(255, Color.WhiteSmoke);//Hrzntl Base DSGN object declaration
+
+        //Hrzntl everithing else DSGN-object declaration -new
+        public MainStatus Sttus = new MainStatus();
+        private Label Ttle = new Label();
+        private Label ttle;
+        private Label NCrr = new Label();
+        private Label UrlImg = new Label();
+        ////private GrphPanel shwGraph;
+        private PictureBox shwPicture = new PictureBox() { Dock = DockStyle.Fill, MinimumSize = new Size(30, 16), /*MaximumSize = new Size(900, 600), */SizeMode = PictureBoxSizeMode.StretchImage, Visible = true };
+        private Label shwSummary;
+        private Label LblSrSDate;
+        private Label LblSrEDate;
+        private Panel allwaysShown = new Panel();
+        private Panel btnHldr = new Panel();
+        private PictureBox icn = 

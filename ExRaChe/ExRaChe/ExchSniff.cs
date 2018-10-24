@@ -17,6 +17,8 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.Globalization;
 //using System.Windows.Forms.DataVisualization.Charting;
 using System.Diagnostics;
+using System.Drawing.Printing;
+
 namespace ExRaChe
 {
     public partial class ExchSniff : Form
@@ -81,7 +83,7 @@ namespace ExRaChe
         private Label NCrr = new Label();
         private Label UrlImg = new Label();
         ////private GrphPanel shwGraph;
-        private PictureBox shwPicture = new PictureBox() { Dock = DockStyle.Fill, MinimumSize = new Size(30, 16), SizeMode = PictureBoxSizeMode.StretchImage, Visible = true };
+        private PictureBox shwPicture = new PictureBox() { Dock = DockStyle.Fill, MinimumSize = new Size(30, 16), /*MaximumSize = new Size(900, 600), */SizeMode = PictureBoxSizeMode.StretchImage, Visible = true };
         private Label shwSummary;
         private Label LblSrSDate;
         private Label LblSrEDate;
@@ -1021,7 +1023,8 @@ namespace ExRaChe
                 {
 
                     ScSize();
-                    SniffIt();
+                    SniffIt(); ShowOneCrrncy(CrrncsRates);
+                    //ShowOneCrrncy(CrrncsRates);
                     tcker.Tick += (sender, e) =>
                     {
                         DateTime now = DateTime.Now;
@@ -1033,7 +1036,7 @@ namespace ExRaChe
                             if (tickCounter == 150)
                             {
                                 tickCounter = 0;
-                                SniffIt();
+                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                             }
                             else tickCounter++;
                             updateWatcher = false;
@@ -1483,7 +1486,7 @@ namespace ExRaChe
                         //    PriceList.Add(new PriceData(kvp.Key, kvp.Value));
                         //}
 
-                        ShowOneCrrncy(CrrncsRates);
+                        //ShowOneCrrncy(CrrncsRates);
 
                     }
                 }//SniffIt
@@ -1573,8 +1576,8 @@ namespace ExRaChe
             {
                 PriceList.Add(new PriceData(kvp.Key, kvp.Value));
             }
-            txtStartDate.Text = PriceList[0].Date.ToString() + Environment.NewLine + PriceList[0].Price.ToString();
-            txtEndDate.Text = PriceList[PriceList.Count - 1].Date.ToString() + Environment.NewLine + PriceList[PriceList.Count - 1].Price.ToString();
+            //txtStartDate.Text = PriceList[0].Date.ToString() + Environment.NewLine + PriceList[0].Price.ToString();
+            //txtEndDate.Text = PriceList[PriceList.Count - 1].Date.ToString() + Environment.NewLine + PriceList[PriceList.Count - 1].Price.ToString();
 
             DrawGraph();
             
@@ -1720,7 +1723,8 @@ namespace ExRaChe
             {
                 gr.SmoothingMode = SmoothingMode.AntiAlias;
                 gr.Clear(Color.White);
-
+                //PixelFormat pixel = new PixelFormat();
+                gr.PixelOffsetMode = PixelOffsetMode.Half;
                 // Scale the data to fit.
                 int wxmaxx = PriceList.Count;
                 float wyminn = (float)PriceList.Min(data => data.Price);
@@ -1801,7 +1805,7 @@ namespace ExRaChe
                 if (LastTipNum < 0) return;
 
                 Bitmap bm = (Bitmap)GraphBm.Clone();
-                //Bitmap bm = (Bitmap)shwPicture.Image;
+                
                 using (Graphics gr = Graphics.FromImage(bm))
                 {
                     gr.Transform = WtoDMatrix;
@@ -1902,12 +1906,12 @@ namespace ExRaChe
                             tipData.SetToolTip(shwPicture, tip);
                             ShowDatePriceLines();
                         };
-                        //shwPicture.MouseEnter += (sender, e) => 
-                        //{ tcker.Start(); };
+                        shwPicture.MouseEnter += (sender, e) => 
+                        { SniffIt(); };
                         shwPicture.MouseMove += (sender, e) =>
                         {
                             {
-                                tcker.Start();
+                                //tcker.Start();
                                 if (DtoWMatrix == null) return;
 
                                 // Get the point in world coordinates.
@@ -1932,8 +1936,9 @@ namespace ExRaChe
                         };
                         shwPicture.MouseLeave += (sender, e) =>
                         {
-                            tcker.Stop();
+                            //tcker.Stop();
                             SniffIt();
+                            //ShowOneCrrncy(CrrncsRates);
                         };
                         tst = false;
                         if (tst)
@@ -1987,7 +1992,7 @@ namespace ExRaChe
                                                 SrStart_date = SrEnd_date.AddMonths(-1);
                                                 LblSrSDate.Text = LblStrtDXm2 + SrStart_date.ToShortDateString();
                                                 LblSrSDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                             else
                                             {
@@ -1997,7 +2002,7 @@ namespace ExRaChe
                                                 SrEnd_date = DateTime.Now;
                                                 LblSrEDate.Text = LblStrtDXm2 + SrEnd_date.ToShortDateString();
                                                 LblSrEDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                         };
                                         BttHldrLocal.Controls.Add(mnth1);
@@ -2015,7 +2020,7 @@ namespace ExRaChe
                                                 SrStart_date = SrEnd_date.AddMonths(-3);
                                                 LblSrSDate.Text = LblStrtDXm2 + SrStart_date.ToShortDateString();
                                                 LblSrSDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                             else
                                             {
@@ -2025,7 +2030,7 @@ namespace ExRaChe
                                                 SrEnd_date = DateTime.Now;
                                                 LblSrEDate.Text = LblStrtDXm2 + SrEnd_date.ToShortDateString();
                                                 LblSrEDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                         };
                                         BttHldrLocal.Controls.Add(mnth3);
@@ -2043,7 +2048,7 @@ namespace ExRaChe
                                                 SrStart_date = SrEnd_date.AddMonths(-6);
                                                 LblSrSDate.Text = LblStrtDXm2 + SrStart_date.ToShortDateString();
                                                 LblSrSDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                             else
                                             {
@@ -2053,7 +2058,7 @@ namespace ExRaChe
                                                 SrEnd_date = DateTime.Now;
                                                 LblSrEDate.Text = LblStrtDXm2 + SrEnd_date.ToShortDateString();
                                                 LblSrEDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                         };
                                         BttHldrLocal.Controls.Add(mnth6);
@@ -2071,7 +2076,7 @@ namespace ExRaChe
                                                 SrStart_date = SrEnd_date.AddMonths(-12);
                                                 LblSrSDate.Text = LblStrtDXm2 + SrStart_date.ToShortDateString();
                                                 LblSrSDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                             else
                                             {
@@ -2081,17 +2086,36 @@ namespace ExRaChe
                                                 SrEnd_date = DateTime.Now;
                                                 LblSrEDate.Text = LblStrtDXm2 + SrEnd_date.ToShortDateString();
                                                 LblSrEDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                         };
                                         BttHldrLocal.Controls.Add(mnth12);
                                         Button mnthAll = new Button() { Text = XmMnthAll, /*Anchor = AnchorStyles.Right | AnchorStyles.Top, */Dock = DockStyle.Right, TextAlign = ContentAlignment.MiddleCenter, Width = (MSzz.Width - 20) / 5, Height = BttHldrLocal.Height, Location = new Point(mnth6.Left, 1), BackColor = ClrdBck, ForeColor = ClrdFrnt, Font = NfoFont };
                                         mnthAll.Click += (sender, e) =>
                                         {
-                                            RstUserDates();
-                                            LblSrSDate.ForeColor = ClrdFrnt;
-                                            LblSrEDate.ForeColor = ClrdFrnt;
-                                            SniffIt();
+                                            //RstUserDates();
+                                            if (nvrtd.Count>1)
+                                            {
+                                                SrStart_date = CrrncyHstry.ElementAt(0).Key;
+                                                SrEnd_date = CrrncyHstry.ElementAt(CrrncyHstry.Count - 1).Key;
+                                                DrawGraph();
+                                                LblSrSDate.Text = LblStrtDXm2+SrStart_date.ToShortDateString();
+                                                LblSrEDate.Text = LblStrtDXm2+SrEnd_date.ToShortDateString();
+                                            }
+                                            else
+                                            {
+                                                SrStart_date = CrrncyHstry.ElementAt(0).Key;
+                                                SrEnd_date =  CrrncyHstry.ElementAt(CrrncyHstry.Count-1).Key;
+                                                LblSrSDate.Text = LblStrtDXm2+SrStart_date.ToShortDateString();
+                                                LblSrEDate.Text = LblStrtDXm2+SrEnd_date.ToShortDateString();
+                                                DrawGraph();
+                                            }
+                                            //txtStartDate.Text = nvrtd[0].Date.ToString() + Environment.NewLine + nvrtd[0].Price.ToString();
+                                            //txtEndDate.Text = nvrtd[nvrtd.Count - 1].Date.ToString() + Environment.NewLine + nvrtd[nvrtd.Count - 1].Price.ToString();
+
+                                            LblSrSDate.ForeColor = ClrdBck;
+                                            LblSrEDate.ForeColor = ClrdBck;
+                                            SniffIt(); ShowOneCrrncy(CrrncsRates);
                                         };
                                         BttHldrLocal.Controls.Add(mnthAll);
                                         BttHldrLocal.ClientSizeChanged += (sender, e) =>
@@ -2384,7 +2408,7 @@ namespace ExRaChe
                                                 SrStart_date = new DateTime(ryear, rmonth, rday, rhour, rminute, rsecond, rmiliSc);
                                                 LblSrSDate.Text = LblStrtDXm2 + SrStart_date.ToString(/*"dd/MM/yyyy"*/) + " " + SrStart_date.DayOfWeek.ToString();// + "TEST/Error on:LblStrtDXm2";// + " is OK";
                                                 LblSrSDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }// Is status OK = LblStrtDXm2
                                         }// Is status OK = LblStrtDXm2
                                         if (SrStart_date == SrEnd_date)
@@ -2400,7 +2424,7 @@ namespace ExRaChe
                                         {
                                             LblSrSDate.Text = LblStrtDXm2 + SrStart_date.ToString(/*"dd/MM/yyyy"*/) + " " + SrStart_date.DayOfWeek.ToString();
 
-                                            SniffIt();
+                                            SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             LblSrSDate.ForeColor = ClrdBck;
                                         }
                                         if (SrStart_date > SrEnd_date)
@@ -2416,7 +2440,7 @@ namespace ExRaChe
                                             {
                                                 LblSrSDate.Text = LblStrtDXm2 + SrStart_date.ToString(/*"dd/MM/yyyy"*/) + " " + SrStart_date.DayOfWeek.ToString();
 
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                                 LblSrSDate.ForeColor = ClrdBck;
                                             }
                                         }
@@ -2471,7 +2495,7 @@ namespace ExRaChe
                                                 //LblSrEDate.Text = "Requested data are not available";
                                                 //LblSrEDate.Text = "Requested data are not available";
                                                 LblSrEDate.ForeColor = ClrdBck;
-                                                SniffIt();
+                                                SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             }
                                         }
                                         if (SrEnd_date == SrStart_date)
@@ -2491,7 +2515,7 @@ namespace ExRaChe
                                         if (SrEnd_date > SrStart_date)
                                         {
                                             LblSrEDate.Text = LblStrtDXm2+ SrEnd_date.ToString("MM/dd/yyyy") + " " + SrEnd_date.DayOfWeek.ToString();
-                                            SniffIt();
+                                            SniffIt(); ShowOneCrrncy(CrrncsRates);
                                             LblSrEDate.ForeColor = ClrdBck;
                                             //return;
                                         }//Status OK = LblStrtDXm2
@@ -3089,6 +3113,34 @@ namespace ExRaChe
             }
             catch (Exception) { }
             //!!SAVE PICTURE FILE ON DISC!!---------------------------------
+            {
+                //PrintDocument pd = new PrintDocument();
+                //pd.DefaultPageSettings.PrinterSettings.PrinterName = "Printer Name";
+                //pd.DefaultPageSettings.Landscape = true; //or false!
+                //pd.PrintPage += (sender, args) =>
+                //{
+                //    Image i = Image.FromFile(myPath += "\\SpliterScreen.jpg");
+                //    Rectangle m = args.MarginBounds;
+
+                //    if ((double)i.Width / (double)i.Height > (double)m.Width / (double)m.Height) // image is wider
+                //    {
+                //        m.Height = (int)((double)i.Height / (double)i.Width * (double)m.Width);
+                //    }
+                //    else
+                //    {
+                //        m.Width = (int)((double)i.Width / (double)i.Height * (double)m.Height);
+                //    }
+                //    args.Graphics.DrawImage(i, m);
+                //};
+                //pd.Print();
+
+            }
+            //PdfDocument doc = new PdfDocument();
+            //doc.Pages.Add(new PdfPage());
+            //XGraphics xgr = XGraphics.FromPdfPage(doc.Pages[0]);
+            //XImage img = XImage.FromFile(source);
+            //xgr.DrawImage(img, 0, 0);
+            //doc.Save(myPath += "\\SpliterScreen.pdf"); doc.Close();
         }//FUNCTION PUBLIC----------------------------------------------  
 
 

@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ExRaChe.exe" size="85456">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ExRaChe.exe" size="86480">
       <assemblyIdentity name="ExRaChe" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>+RoiOPJBxUpPFCX6xeL27QviJRPISzqeIYWRwG45ToA=</dsig:DigestValue>
+        <dsig:DigestValue>6FjhD38vcLA9Abnz7bYmHldenYY+Ntavy+BLfiqudBs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
